@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import type { Web3WalletTypes } from '@walletconnect/web3wallet'
 import { getSdkError } from '@walletconnect/utils'
 import { hexToUtf8 } from '@walletconnect/encoding'
@@ -18,18 +18,18 @@ type WalletConnectHook = {
 }
 
 type Props = {
-  chainId: string
-  address: string
   kernelClient: KernelAccountClient
 }
 
 const IS_PRODUCTION = false // TODO
 
-export default function useWalletConnect({ chainId, address, kernelClient }: Props): WalletConnectHook {
+export default function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
   const [wcWallet, setWcWallet] = useState<WalletConnectWallet>()
   const [proposal, setProposal] = useState<Web3WalletTypes.SessionProposal>()
   const [isLoading, setIsLoading] = useState(false)
   const [kernelProvider, setKernelProvider] = useState<KernelEIP1193Provider>()
+  const chainId = useMemo(() => kernelClient.chain.id, [kernelClient])
+  const address = useMemo(() => kernelClient.account.address, [kernelClient])
 
   useEffect(() => {
     const getWallet = async () => {
