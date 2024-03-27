@@ -1,0 +1,27 @@
+{
+  "name": "react-sdk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@walletconnect/core": "^2.11.3",
+    "@walletconnect/encoding": "^1.0.2",
+    "@walletconnect/web3wallet": "^1.10.3",
+    "@zerodev/sdk": "^5.1.14",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.0",
+    "@types/react": "^18.2.73",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
+  }
+}
