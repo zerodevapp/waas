@@ -906,10 +906,10 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@zerodev/sdk@^5.1.14":
-  version "5.1.14"
-  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-5.1.14.tgz#3c44329b4ddb4be377be043f5e4f0e581cb0c865"
-  integrity sha512-DyszAEBBMJkQ08jMGbBCyoHJE/6xdPVOZDZaiwOIRx/TUvNlN3+oWSowMrM8+NYfMwl7QOQarr5c5BIer/nAxQ==
+"@zerodev/sdk@^5.1.18":
+  version "5.1.18"
+  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-5.1.18.tgz#8141da131598d0beaceee66d406ebe48351b31f6"
+  integrity sha512-eJBoEydimxGw8CYbEeVxMIADRUQbmWP5QUlPCTl34vioA51LOPffilZF4CYa06vbZn2YYtqYdEl+saA3xBynYA==
   dependencies:
     permissionless "^0.0.34"
 

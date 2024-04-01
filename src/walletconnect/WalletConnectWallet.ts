@@ -183,22 +183,22 @@ class WalletConnectWallet {
     this.web3Wallet.events.emit('session_delete', session)
   }
 
-    /**
-   * Subscribe to session delete
-   */
-    public onSessionDelete = (handler: (session: SessionTypes.Struct) => void) => {
-      // @ts-expect-error - custom event payload
-      this.web3Wallet?.on('session_delete', handler)
-  
-      return () => {
-        // @ts-expect-error - custom event payload
-        this.web3Wallet?.off('session_delete', handler)
-      }
-    }
+  /**
+ * Subscribe to session delete
+ */
+  public onSessionDelete = (handler: (session: SessionTypes.Struct) => void) => {
+    // @ts-expect-error - custom event payload
+    this.web3Wallet?.on('session_delete', handler)
 
-      /**
-   * Subscribe to session add
-   */
+    return () => {
+      // @ts-expect-error - custom event payload
+      this.web3Wallet?.off('session_delete', handler)
+    }
+  }
+
+  /**
+* Subscribe to session add
+*/
   public onSessionAdd = (handler: (e: SessionTypes.Struct) => void) => {
     // @ts-expect-error - custom event payload
     this.web3Wallet?.on(SESSION_ADD_EVENT, handler)

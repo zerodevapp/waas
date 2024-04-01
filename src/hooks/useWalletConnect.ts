@@ -66,8 +66,7 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
       const { request } = params
       if (request.method === 'personal_sign') {
         const requestParamsMessage = request.params[0]
-      
-        // convert `requestParamsMessage` by using a method like hexToUtf8
+
         const message = hexToUtf8(requestParamsMessage)
         const signedMessage = await kernelProvider.request({
           ...request,
@@ -80,8 +79,22 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
         return { id, result: signedMessage, jsonrpc: '2.0' }
       }
 
+      if (request.method === 'eth_sign') {
+        const requestParamsMessage = request.params[1]
+
+        const message = hexToUtf8(requestParamsMessage)
+        const signedMessage = await kernelProvider.request({
+          ...request,
+          params: [
+            request.params[0],
+            message,
+          ]
+        })
+
+        return { id, result: signedMessage, jsonrpc: '2.0' }
+      }
+
       const result = await kernelProvider.request(request)
-      console.log(result)
       return {
         jsonrpc: '2.0',
         id: id,
@@ -178,7 +191,7 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
   // Subscribe to session proposals
   useEffect(() => {
     if (!wcWallet) return
-    return wcWallet.onSessionPropose((proposalData: Web3WalletTypes.SessionProposal) => {
+    return wcWallet.onSessionPropose((proposalData) => {
       // setError(null)
 
       setProposal(proposalData)
