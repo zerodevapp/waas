@@ -124,8 +124,6 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
           return formatJsonRpcError(event.id, error)
         }
 
-        console.log('session_request: ', event);
-        console.log('session: ', session);
         return handleKernelRequest(event)
       }
 
@@ -145,7 +143,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     })
   }, [wcWallet, chainId, kernelProvider, handleKernelRequest])
 
-  // Update chainId/safeAddress
+  // Update chainId/address
   useEffect(() => {
     if (!wcWallet || !chainId || !address) return
 
@@ -182,7 +180,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
       setIsLoading(WCLoadingState.APPROVE)
 
       try {
-        const response = await wcWallet.approveSession(sessionProposal, chainId, address)
+        await wcWallet.approveSession(sessionProposal, chainId, address)
       } catch (e) {
         setError(asError(e))
       }
