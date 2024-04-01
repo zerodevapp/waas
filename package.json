@@ -2,9 +2,12 @@
   "name": "@zerodev/waas",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "tsup",
+    "build": "yarn build:types && yarn build:js",
     "dev": "tsup --watch"
   },
   "keywords": [],
@@ -16,12 +19,15 @@
     "@walletconnect/web3wallet": "^1.10.3",
     "@zerodev/sdk": "^5.1.18",
     "lodash": "^4.17.21",
-    "react": "^18.2.0"
+    "permissionless": "0.0.34",
+    "react": "^18.2.0",
+    "viem": "2.9.4"
   },
   "devDependencies": {
     "@swc/core": "^1.4.11",
     "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.73",
+    "tsc": "^2.0.4",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
   }

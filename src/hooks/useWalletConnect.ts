@@ -115,7 +115,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
 
       const getResponse = () => {
         // Get error if wrong chain
-        if (!session || parseInt(requestChainId) !== parseInt(chainId)) {
+        if (!session || parseInt(requestChainId) !== chainId) {
           if (session) {
             setError(getWrongChainError(getPeerName(session.peer)))
           }
@@ -147,7 +147,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
   useEffect(() => {
     if (!wcWallet || !chainId || !address) return
 
-    wcWallet.updateSessions(chainId, address).catch((e: Error) => {
+    wcWallet.updateSessions(chainId.toString(), address).catch((e: Error) => {
       setError(asError(e))
     })
   }, [wcWallet, chainId, address])
@@ -181,7 +181,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
       setIsLoading(WCLoadingState.APPROVE)
 
       try {
-        await wcWallet.approveSession(sessionProposal, chainId, address)
+        await wcWallet.approveSession(sessionProposal, chainId.toString(), address)
       } catch (e) {
         setError(asError(e))
       }
