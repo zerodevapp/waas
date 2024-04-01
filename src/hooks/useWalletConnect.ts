@@ -152,24 +152,25 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     })
   }, [wcWallet, chainId, address])
 
-  const connect = async (uri: string) => {
-    if (!wcWallet) return
+  const connect = useCallback(
+    async (uri: string) => {
+      if (!wcWallet) return
 
-    if (uri && !uri.startsWith('wc:')) {
-      setError(new Error('Invalid pairing code'))
-      return
-    }
+      if (uri && !uri.startsWith('wc:')) {
+        setError(new Error('Invalid pairing code'))
+        return
+      }
 
-    setError(undefined)
+      setError(undefined)
 
-    setIsLoading(WCLoadingState.CONNECT)
-    try {
-      await wcWallet.connect(uri)
-    } catch (e) {
-      setError(asError(e))
-    }
-    setIsLoading(undefined)
-  }
+      setIsLoading(WCLoadingState.CONNECT)
+      try {
+        await wcWallet.connect(uri)
+      } catch (e) {
+        setError(asError(e))
+      }
+      setIsLoading(undefined)
+    }, [wcWallet, setIsLoading])
 
   const approve = useCallback(
     async (proposalData?: Web3WalletTypes.SessionProposal) => {
