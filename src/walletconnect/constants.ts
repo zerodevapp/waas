@@ -11,7 +11,6 @@ export const EIP155 = 'eip155' as const
 
 export const KERNEL_COMPATIBLE_METHODS = [
   'eth_accounts',
-  'net_version',
   'eth_chainId',
   'personal_sign',
   'eth_sign',
@@ -31,10 +30,6 @@ export const KERNEL_COMPATIBLE_METHODS = [
   'eth_call',
   'eth_getLogs',
   'eth_gasPrice',
-  'wallet_switchEthereumChain',
-  'wallet_sendFunctionCallBundle',
-  'wallet_getBundleStatus',
-  'wallet_showBundleStatus',
 ]
 
 export const KERNEL_COMPATIBLE_EVENTS = ['chainChanged', 'accountsChanged']

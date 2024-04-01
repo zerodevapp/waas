@@ -1,6 +1,6 @@
 {
-  "name": "react-sdk",
-  "version": "1.0.0",
+  "name": "@zerodev/waas",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
+    "@swc/core": "^1.4.11",
     "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.73",
     "tsup": "^8.0.2",

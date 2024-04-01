@@ -7,18 +7,19 @@ import type { SessionTypes } from '@walletconnect/types'
 import WalletConnectWallet from '../walletconnect/WalletConnectWallet'
 import { KernelAccountClient, KernelEIP1193Provider } from "@zerodev/sdk";
 import { stripEip155Prefix } from "../walletconnect/constants";
+import { asError, getWrongChainError, getPeerName } from "../walletconnect/utils";
 
 type WalletConnectHook = {
   connect: (uri: string) => void
-  onApprove: (proposalData?: Web3WalletTypes.SessionProposal) => void
-  proposal: Web3WalletTypes.SessionProposal | undefined
-  onReject: () => void
-  isLoading: boolean
+  approve: (proposalData?: Web3WalletTypes.SessionProposal) => void
+  reject: () => void
   disconnect: (session: SessionTypes.Struct) => void
+  proposal: Web3WalletTypes.SessionProposal | undefined
+  isLoading: WCLoadingState | undefined
   sessions: SessionTypes.Struct[]
+  error: Error | undefined
 }
 
-// todo
 export enum WCLoadingState {
   APPROVE = 'Approve',
   REJECT = 'Reject',
@@ -30,10 +31,11 @@ type Props = {
   kernelClient: KernelAccountClient
 }
 
-export default function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
+export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
   const [wcWallet, setWcWallet] = useState<WalletConnectWallet>()
   const [proposal, setProposal] = useState<Web3WalletTypes.SessionProposal>()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<WCLoadingState | undefined>()
+  const [error, setError] = useState<Error | undefined>()
   const [kernelProvider, setKernelProvider] = useState<KernelEIP1193Provider>()
   const [sessions, setSessions] = useState<SessionTypes.Struct[]>([])
   const chainId = useMemo(() => kernelClient?.chain?.id, [kernelClient])
@@ -107,19 +109,15 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
     if (!wcWallet || !kernelProvider || !chainId) return
 
     return wcWallet.onRequest(async (event) => {
-      console.log(event)
-
       const { topic } = event
       const session = wcWallet.getActiveSessions().find((s) => s.topic === topic)
       const requestChainId = stripEip155Prefix(event.params.chainId)
 
       const getResponse = () => {
-        console.log(event)
-
         // Get error if wrong chain
         if (!session || parseInt(requestChainId) !== parseInt(chainId)) {
           if (session) {
-            // setError(getWrongChainError(getPeerName(session.peer))) // TODO
+            setError(getWrongChainError(getPeerName(session.peer)))
           }
 
           const error = getSdkError('UNSUPPORTED_CHAINS')
@@ -137,12 +135,12 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
         // Send response to WalletConnect
         await wcWallet.sendSessionResponse(topic, response)
       } catch (e) {
-        console.log(e)
-        return formatJsonRpcError(event.id, {
+        setError(asError(e))
+        const errorResponse = formatJsonRpcError(event.id, {
           code: 5000,
           message: (e as Error)?.message,
         })
-        // setError(asError(e))
+        await wcWallet.sendSessionResponse(topic, errorResponse)
       }
     })
   }, [wcWallet, chainId, kernelProvider, handleKernelRequest])
@@ -152,37 +150,44 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
     if (!wcWallet || !chainId || !address) return
 
     wcWallet.updateSessions(chainId, address).catch((e: Error) => {
-      console.log(e)
+      setError(asError(e))
     })
   }, [wcWallet, chainId, address])
 
   const connect = async (uri: string) => {
     if (!wcWallet) return
-    await wcWallet.connect(uri)
+
+    if (uri && !uri.startsWith('wc:')) {
+      setError(new Error('Invalid pairing code'))
+      return
+    }
+
+    setError(undefined)
+
+    setIsLoading(WCLoadingState.CONNECT)
+    try {
+      await wcWallet.connect(uri)
+    } catch (e) {
+      setError(asError(e))
+    }
+    setIsLoading(undefined)
   }
 
-  const onApprove = useCallback(
+  const approve = useCallback(
     async (proposalData?: Web3WalletTypes.SessionProposal) => {
       const sessionProposal = proposalData || proposal
 
       if (!wcWallet || !chainId || !address || !sessionProposal) return
 
-      const label = sessionProposal?.params.proposer.metadata.url
-      console.log('label', label);
-
-      setIsLoading(true)
+      setIsLoading(WCLoadingState.APPROVE)
 
       try {
         const response = await wcWallet.approveSession(sessionProposal, chainId, address)
-        console.log('response', response)
       } catch (e) {
-        setIsLoading(false)
-        console.log(e)
-        // setError(asError(e))
-        return
+        setError(asError(e))
       }
 
-      setIsLoading(false)
+      setIsLoading(undefined)
       setProposal(undefined)
     },
     [proposal, wcWallet, chainId, address, setIsLoading],
@@ -196,32 +201,36 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
 
       setProposal(proposalData)
     })
-  }, [wcWallet, onApprove, chainId])
+  }, [wcWallet, approve, chainId])
 
   // On session reject
-  const onReject = useCallback(async () => {
+  const reject = useCallback(async () => {
     if (!wcWallet || !proposal) return
 
-    const label = proposal?.params.proposer.metadata.url
-    console.log('reject label', label);
-
-    setIsLoading(true)
+    setIsLoading(WCLoadingState.REJECT)
 
     try {
       await wcWallet.rejectSession(proposal)
     } catch (e) {
-      setIsLoading(false)
-      console.log(e)
-      // setError(asError(e))
+      setError(asError(e))
     }
 
-    setIsLoading(false)
+    setIsLoading(undefined)
     setProposal(undefined)
   }, [wcWallet, proposal, setIsLoading, setProposal])
 
   const disconnect = async (session: SessionTypes.Struct) => {
     if (!wcWallet) return
-    await wcWallet.disconnectSession(session)
+
+    setIsLoading(WCLoadingState.DISCONNECT)
+
+    try {
+      await wcWallet.disconnectSession(session)
+    } catch (e) {
+      setError(asError(e))
+    }
+
+    setIsLoading(undefined)
   }
 
   const updateSessions = useCallback(() => {
@@ -246,12 +255,13 @@ export default function useWalletConnect({ kernelClient }: Props): WalletConnect
 
   return {
     connect,
-    onApprove,
-    proposal,
-    onReject,
-    isLoading,
+    approve,
+    reject,
     disconnect,
+    proposal,
+    isLoading,
     sessions,
+    error,
   }
 }
 
