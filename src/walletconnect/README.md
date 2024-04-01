@@ -3,7 +3,7 @@ To use the hook in your component:
 
 1. Import useWalletConnect:
 ```javascript
-import useWalletConnect from '...'
+import { useWalletConnect } from '@zerodev/waas'
 ```
 
 2. Initialize the hook by passing the required parameters: chainId, address, and kernelClient:
@@ -11,10 +11,12 @@ import useWalletConnect from '...'
 const {
   connect,
   proposal,
-  onApprove,
-  onReject,
-  isLoading,
-  disconnect
+  approve,
+  reject, 
+  isLoading, 
+  error, 
+  disconnect, 
+  sessions,
 } = useWalletConnect({
   kernelClient,
 });
@@ -34,8 +36,8 @@ When a session proposal is received, the hook updates the proposal state. You ca
 ```javascript
 {proposal && (
   <>
-    <button onClick={() => onApprove(proposal)}>Approve</button>
-    <button onClick={() => onReject()}>Reject</button>
+    <button onClick={() => approve(proposal)}>Approve</button>
+    <button onClick={() => reject()}>Reject</button>
   </>
 )}
 ```

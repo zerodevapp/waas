@@ -1,1 +1,1 @@
-# zerodev-react-sdk
+# ZeroDev WaaS React SDK
