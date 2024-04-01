@@ -1,10 +1,12 @@
 import { Core } from '@walletconnect/core'
-import { Web3Wallet, type Web3WalletTypes } from '@walletconnect/web3wallet'
+import { Web3Wallet } from '@walletconnect/web3wallet'
 import type Web3WalletType from '@walletconnect/web3wallet'
+import type { Web3WalletTypes } from '@walletconnect/web3wallet'
 import { type JsonRpcResponse } from '@walletconnect/jsonrpc-utils'
 import type { SessionTypes } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
-import { EIP155, KERNEL_COMPATIBLE_EVENTS, KERNEL_COMPATIBLE_METHODS, ZERO_DEV_WALLET_METADATA, WC_PROJECT_ID  } from './constants'
+import { ZERO_DEV_WALLET_METADATA, WC_PROJECT_ID } from './constants'
+import { EIP155, KERNEL_COMPATIBLE_EVENTS, KERNEL_COMPATIBLE_METHODS } from './constants'
 import { getEip155ChainId, stripEip155Prefix } from './utils'
 import uniq from 'lodash/uniq'
 
@@ -179,6 +181,93 @@ class WalletConnectWallet {
     // Workaround: WalletConnect doesn't emit session_delete event when disconnecting from the wallet side
     // and we want to update the state inside the useWalletConnectSessions hook
     this.web3Wallet.events.emit('session_delete', session)
+  }
+
+    /**
+   * Subscribe to session delete
+   */
+    public onSessionDelete = (handler: (session: SessionTypes.Struct) => void) => {
+      // @ts-expect-error - custom event payload
+      this.web3Wallet?.on('session_delete', handler)
+  
+      return () => {
+        // @ts-expect-error - custom event payload
+        this.web3Wallet?.off('session_delete', handler)
+      }
+    }
+
+      /**
+   * Subscribe to session add
+   */
+  public onSessionAdd = (handler: (e: SessionTypes.Struct) => void) => {
+    // @ts-expect-error - custom event payload
+    this.web3Wallet?.on(SESSION_ADD_EVENT, handler)
+
+    return () => {
+      // @ts-expect-error - custom event payload
+      this.web3Wallet?.off(SESSION_ADD_EVENT, handler)
+    }
+  }
+
+  private async updateSession(session: SessionTypes.Struct, chainId: string, safeAddress: string) {
+    if (!this.web3Wallet) throw new Error('WalletConnect not initialized')
+
+    const currentEip155ChainIds = session.namespaces[EIP155]?.chains || []
+    const currentEip155Accounts = session.namespaces[EIP155]?.accounts || []
+
+    const newEip155ChainId = getEip155ChainId(chainId)
+    const newEip155Account = `${newEip155ChainId}:${safeAddress}`
+
+    const isUnsupportedChain = !currentEip155ChainIds.includes(newEip155ChainId)
+    const isNewSessionSafe = !currentEip155Accounts.includes(newEip155Account)
+
+    // Switching to unsupported chain
+    if (isUnsupportedChain) {
+      return this.disconnectSession(session)
+    }
+
+    // Add new Safe to the session namespace
+    if (isNewSessionSafe) {
+      const namespaces: SessionTypes.Namespaces = {
+        [EIP155]: {
+          ...session.namespaces[EIP155],
+          chains: currentEip155ChainIds,
+          accounts: [newEip155Account, ...currentEip155Accounts],
+        },
+      }
+
+      await this.web3Wallet.updateSession({
+        topic: session.topic,
+        namespaces,
+      })
+    }
+
+    // Switch to the new chain
+    await this.chainChanged(session.topic, chainId)
+
+    // Switch to the new Safe
+    await this.accountsChanged(session.topic, chainId, safeAddress)
+  }
+
+  public async accountsChanged(topic: string, chainId: string, address: string) {
+    const eipChainId = getEip155ChainId(chainId)
+
+    return this.web3Wallet?.emitSessionEvent({
+      topic,
+      event: {
+        name: 'accountsChanged',
+        data: [address],
+      },
+      chainId: eipChainId,
+    })
+  }
+
+  public async updateSessions(chainId: string, safeAddress: string) {
+    // If updating sessions disconnects multiple due to an unsupported chain,
+    // we need to wait for the previous session to disconnect before the next
+    for await (const session of this.getActiveSessions()) {
+      await this.updateSession(session, chainId, safeAddress)
+    }
   }
 }
 
