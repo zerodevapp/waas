@@ -10,13 +10,16 @@ import { useWalletConnect } from '@zerodev/waas'
 ```javascript
 const {
   connect,
-  proposal,
+  sessionProposal,
   approve,
   reject, 
   isLoading, 
   error, 
   disconnect, 
   sessions,
+  sessionRequest,
+  approveSessionRequest,
+  rejectSessionRequest
 } = useWalletConnect({
   kernelClient,
 });
@@ -57,9 +60,19 @@ function WalletConnectComponent() {
   const [account, setAccount] = useState();
   const [uri, setUri] = useState('');
 
-  const { connect, proposal, onApprove, onReject } = useWalletConnect({
-    chainId: account?.chain.id,
-    address: account?.account.address,
+  const {
+    connect,
+    sessionProposal,
+    approve,
+    reject, 
+    isLoading, 
+    error, 
+    disconnect, 
+    sessions,
+    sessionRequest,
+    approveSessionRequest,
+    rejectSessionRequest
+  } = useWalletConnect({
     kernelClient: account
   });
 
@@ -72,6 +85,17 @@ function WalletConnectComponent() {
           <button onClick={() => onApprove(proposal)}>Approve</button>
           <button onClick={() => onReject()}>Reject</button>
         </>
+      )}
+      {sessionRequest && (
+        <div>
+          <h3>Session Request</h3>
+          <div>
+            <p>Method: {sessionRequest.params.request.method}</p>
+            <p>Params: {sessionRequest.params.request.params}</p>
+          </div>
+          <button onClick={() => approveSessionRequest()}>Approve</button>
+          <button onClick={() => rejectSessionRequest()}>Reject</button>
+        </div>
       )}
     </div>
   );
