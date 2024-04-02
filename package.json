@@ -7,7 +7,7 @@
   "scripts": {
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "tsup",
-    "build": "yarn build:types && yarn build:js",
+    "build": "yarn build:js && yarn build:types",
     "dev": "tsup --watch"
   },
   "keywords": [],
