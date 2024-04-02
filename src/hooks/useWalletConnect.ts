@@ -58,7 +58,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     if (!kernelClient) return
     const provider = new KernelEIP1193Provider(kernelClient)
     setKernelProvider(provider)
-  }, [kernelClient])
+  }, [kernelClient, chainId])
 
   const handleKernelRequest = useCallback(
     async (event: Web3WalletTypes.SessionRequest): Promise<{
@@ -107,7 +107,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
         result
       }
     },
-    [kernelProvider]
+    [kernelProvider, chainId]
   )
 
   const approveSessionRequest = useCallback(async () => {
@@ -159,7 +159,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     })
     await wcWallet.sendSessionResponse(topic, errorResponse)
     setSessionRequest(undefined)
-  }, [wcWallet, sessionRequest])
+  }, [wcWallet, sessionRequest, chainId])
 
   // Subscribe to requests
   useEffect(() => {
@@ -197,7 +197,9 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
         setError(asError(e))
       }
       setIsLoading(undefined)
-    }, [wcWallet, setIsLoading])
+    },
+    [wcWallet, setIsLoading]
+  )
 
   const approve = useCallback(
     async (proposalData?: Web3WalletTypes.SessionProposal) => {

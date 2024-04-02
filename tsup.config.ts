@@ -5,6 +5,7 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   splitting: false,
   sourcemap: true,
-  clean: true
+  clean: true,
+  target: 'es2020',
 });
 
