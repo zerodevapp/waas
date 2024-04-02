@@ -1,13 +1,11 @@
 {
   "name": "@zerodev/waas",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build:types": "tsc --emitDeclarationOnly",
-    "build:js": "tsup",
-    "build": "yarn build:js && yarn build:types",
+    "build": "tsup",
     "dev": "tsup --watch"
   },
   "keywords": [],
@@ -27,7 +25,6 @@
     "@swc/core": "^1.4.11",
     "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.73",
-    "tsc": "^2.0.4",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
   }
