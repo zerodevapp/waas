@@ -14,7 +14,10 @@ type WalletConnectHook = {
   approve: (proposalData?: Web3WalletTypes.SessionProposal) => void
   reject: () => void
   disconnect: (session: SessionTypes.Struct) => void
-  proposal: Web3WalletTypes.SessionProposal | undefined
+  approveSessionRequest: () => void
+  rejectSessionRequest: () => void
+  sessionRequest: Web3WalletTypes.SessionRequest | undefined
+  sessionProposal: Web3WalletTypes.SessionProposal | undefined
   isLoading: WCLoadingState | undefined
   sessions: SessionTypes.Struct[]
   error: Error | undefined
@@ -33,11 +36,12 @@ type Props = {
 
 export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
   const [wcWallet, setWcWallet] = useState<WalletConnectWallet>()
-  const [proposal, setProposal] = useState<Web3WalletTypes.SessionProposal>()
+  const [sessionProposal, setSessionProposal] = useState<Web3WalletTypes.SessionProposal>()
   const [isLoading, setIsLoading] = useState<WCLoadingState | undefined>()
   const [error, setError] = useState<Error | undefined>()
   const [kernelProvider, setKernelProvider] = useState<KernelEIP1193Provider>()
   const [sessions, setSessions] = useState<SessionTypes.Struct[]>([])
+  const [sessionRequest, setSessionRequest] = useState<Web3WalletTypes.SessionRequest>()
   const chainId = useMemo(() => kernelClient?.chain?.id, [kernelClient])
   const address = useMemo(() => kernelClient?.account?.address, [kernelClient])
 
@@ -102,44 +106,67 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
         id: id,
         result
       }
-    }, [kernelProvider])
+    },
+    [kernelProvider]
+  )
+
+  const approveSessionRequest = useCallback(async () => {
+    const event = sessionRequest
+    if (!event || !wcWallet) return
+
+    const { topic } = event
+    const session = wcWallet.getActiveSessions().find((s) => s.topic === topic)
+    const requestChainId = stripEip155Prefix(event.params.chainId)
+
+    const getResponse = () => {
+      // Get error if wrong chain
+      if (!session || parseInt(requestChainId) !== chainId) {
+        if (session) {
+          setError(getWrongChainError(getPeerName(session.peer)))
+        }
+
+        const error = getSdkError('UNSUPPORTED_CHAINS')
+        return formatJsonRpcError(event.id, error)
+      }
+      setSessionRequest(undefined)
+      return handleKernelRequest(event)
+    }
+
+    try {
+      const response = await getResponse()
+
+      // Send response to WalletConnect
+      await wcWallet.sendSessionResponse(topic, response)
+    } catch (e) {
+      setError(asError(e))
+      const errorResponse = formatJsonRpcError(event.id, {
+        code: 5000,
+        message: (e as Error)?.message,
+      })
+      await wcWallet.sendSessionResponse(topic, errorResponse)
+    } finally {
+      setSessionRequest(undefined)
+    }
+  }, [sessionRequest, handleKernelRequest, wcWallet, chainId])
+
+  const rejectSessionRequest = useCallback(async () => {
+    if (!wcWallet || !sessionRequest) return
+
+    const { topic } = sessionRequest
+    const errorResponse = formatJsonRpcError(sessionRequest.id, {
+      code: 5000,
+      message: 'User Rejected',
+    })
+    await wcWallet.sendSessionResponse(topic, errorResponse)
+    setSessionRequest(undefined)
+  }, [wcWallet, sessionRequest])
 
   // Subscribe to requests
   useEffect(() => {
     if (!wcWallet || !kernelProvider || !chainId) return
 
     return wcWallet.onRequest(async (event) => {
-      const { topic } = event
-      const session = wcWallet.getActiveSessions().find((s) => s.topic === topic)
-      const requestChainId = stripEip155Prefix(event.params.chainId)
-
-      const getResponse = () => {
-        // Get error if wrong chain
-        if (!session || parseInt(requestChainId) !== chainId) {
-          if (session) {
-            setError(getWrongChainError(getPeerName(session.peer)))
-          }
-
-          const error = getSdkError('UNSUPPORTED_CHAINS')
-          return formatJsonRpcError(event.id, error)
-        }
-
-        return handleKernelRequest(event)
-      }
-
-      try {
-        const response = await getResponse()
-
-        // Send response to WalletConnect
-        await wcWallet.sendSessionResponse(topic, response)
-      } catch (e) {
-        setError(asError(e))
-        const errorResponse = formatJsonRpcError(event.id, {
-          code: 5000,
-          message: (e as Error)?.message,
-        })
-        await wcWallet.sendSessionResponse(topic, errorResponse)
-      }
+      setSessionRequest(event);
     })
   }, [wcWallet, chainId, kernelProvider, handleKernelRequest])
 
@@ -174,22 +201,22 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
 
   const approve = useCallback(
     async (proposalData?: Web3WalletTypes.SessionProposal) => {
-      const sessionProposal = proposalData || proposal
+      const proposal = proposalData || sessionProposal
 
-      if (!wcWallet || !chainId || !address || !sessionProposal) return
+      if (!wcWallet || !chainId || !address || !proposal) return
 
       setIsLoading(WCLoadingState.APPROVE)
 
       try {
-        await wcWallet.approveSession(sessionProposal, chainId.toString(), address)
+        await wcWallet.approveSession(proposal, chainId.toString(), address)
       } catch (e) {
         setError(asError(e))
       }
 
       setIsLoading(undefined)
-      setProposal(undefined)
+      setSessionProposal(undefined)
     },
-    [proposal, wcWallet, chainId, address, setIsLoading],
+    [sessionProposal, wcWallet, chainId, address, setIsLoading],
   )
 
   // Subscribe to session proposals
@@ -198,25 +225,25 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     return wcWallet.onSessionPropose((proposalData) => {
       // setError(null)
 
-      setProposal(proposalData)
+      setSessionProposal(proposalData)
     })
   }, [wcWallet, approve, chainId])
 
   // On session reject
   const reject = useCallback(async () => {
-    if (!wcWallet || !proposal) return
+    if (!wcWallet || !sessionProposal) return
 
     setIsLoading(WCLoadingState.REJECT)
 
     try {
-      await wcWallet.rejectSession(proposal)
+      await wcWallet.rejectSession(sessionProposal)
     } catch (e) {
       setError(asError(e))
     }
 
     setIsLoading(undefined)
-    setProposal(undefined)
-  }, [wcWallet, proposal, setIsLoading, setProposal])
+    setSessionProposal(undefined)
+  }, [wcWallet, sessionProposal, setIsLoading, setSessionProposal])
 
   const disconnect = async (session: SessionTypes.Struct) => {
     if (!wcWallet) return
@@ -257,7 +284,10 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     approve,
     reject,
     disconnect,
-    proposal,
+    approveSessionRequest,
+    rejectSessionRequest,
+    sessionProposal,
+    sessionRequest,
     isLoading,
     sessions,
     error,
