@@ -11,8 +11,8 @@ import { asError, getWrongChainError, getPeerName } from "../walletconnect/utils
 
 type WalletConnectHook = {
   connect: (uri: string) => void
-  approve: (proposalData?: Web3WalletTypes.SessionProposal) => void
-  reject: () => void
+  approveSessionProposal: (proposalData?: Web3WalletTypes.SessionProposal) => void
+  rejectSessionProposal: () => void
   disconnect: (session: SessionTypes.Struct) => void
   approveSessionRequest: () => void
   rejectSessionRequest: () => void
@@ -201,7 +201,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
     [wcWallet, setIsLoading]
   )
 
-  const approve = useCallback(
+  const approveSessionProposal = useCallback(
     async (proposalData?: Web3WalletTypes.SessionProposal) => {
       const proposal = proposalData || sessionProposal
 
@@ -229,10 +229,10 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
 
       setSessionProposal(proposalData)
     })
-  }, [wcWallet, approve, chainId])
+  }, [wcWallet, approveSessionProposal, chainId])
 
   // On session reject
-  const reject = useCallback(async () => {
+  const rejectSessionProposal = useCallback(async () => {
     if (!wcWallet || !sessionProposal) return
 
     setIsLoading(WCLoadingState.REJECT)
@@ -283,8 +283,8 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
 
   return {
     connect,
-    approve,
-    reject,
+    approveSessionProposal,
+    rejectSessionProposal,
     disconnect,
     approveSessionRequest,
     rejectSessionRequest,

@@ -11,8 +11,8 @@ import { useWalletConnect } from '@zerodev/waas'
 const {
   connect,
   sessionProposal,
-  approve,
-  reject, 
+  approveSessionProposal,
+  rejectSessionProposal, 
   isLoading, 
   error, 
   disconnect, 
@@ -37,10 +37,10 @@ connect("YourWalletConnectUri");
 When a session proposal is received, the hook updates the proposal state. You can display this proposal to the user and allow them to approve or reject it:
 
 ```javascript
-{proposal && (
+{sessionProposal && (
   <>
-    <button onClick={() => approve(proposal)}>Approve</button>
-    <button onClick={() => reject()}>Reject</button>
+    <button onClick={() => approveSessionProposal(sessionProposal)}>Approve</button>
+    <button onClick={() => rejectSessionProposal()}>Reject</button>
   </>
 )}
 ```
@@ -63,8 +63,8 @@ function WalletConnectComponent() {
   const {
     connect,
     sessionProposal,
-    approve,
-    reject, 
+    approveSessionProposal,
+    rejectSessionProposal, 
     isLoading, 
     error, 
     disconnect, 
@@ -80,10 +80,10 @@ function WalletConnectComponent() {
     <div>
       <input value={uri} onChange={(e) => setUri(e.target.value)} />
       <button onClick={() => connect(uri)}>Connect</button>
-      {proposal && (
+      {sessionProposal && (
         <>
-          <button onClick={() => onApprove(proposal)}>Approve</button>
-          <button onClick={() => onReject()}>Reject</button>
+          <button onClick={() => approveSessionProposal(sessionProposal)}>Approve</button>
+          <button onClick={() => rejectSessionProposal()}>Reject</button>
         </>
       )}
       {sessionRequest && (
