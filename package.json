@@ -12,15 +12,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tanstack/react-query": "^5.28.14",
     "@walletconnect/core": "^2.11.3",
     "@walletconnect/encoding": "^1.0.2",
     "@walletconnect/web3wallet": "^1.10.3",
-    "@zerodev/sdk": "^5.1.18",
+    "@zerodev/ecdsa-validator": "5.2.1-alpha-0",
+    "@zerodev/passkey-validator": "5.2.1-alpha.0",
+    "@zerodev/permissions": "^5.2.1-alpha.4",
+    "@zerodev/sdk": "5.2.1-alpha-0",
+    "@zerodev/session-key": "5.2.1-alpha.0",
     "events": "^3.3.0",
     "lodash": "^4.17.21",
-    "permissionless": "0.0.34",
+    "permissionless": "^0.1.12",
     "react": "^18.2.0",
-    "viem": "2.9.4"
+    "viem": "2.9.4",
+    "wagmi": "^2.5.19"
   },
   "devDependencies": {
     "@swc/core": "^1.4.11",
