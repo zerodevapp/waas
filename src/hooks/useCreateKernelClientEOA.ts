@@ -96,6 +96,12 @@ export function useCreateKernelClientEOA({
       version,
     }),
     mutationFn,
+    onSuccess: (data) => {
+      setValidator(data.validator);
+      setKernelAccount(data.kernelAccount);
+      setEntryPoint(data.entryPoint);
+      setKernelAccountClient(null);
+    }
   });
 
   const connect = useMemo(() => {
@@ -107,21 +113,6 @@ export function useCreateKernelClientEOA({
         version,
       });
   }, [config, mutate, client, version]);
-
-  useEffect(() => {
-    if (data) {
-      setValidator(data.validator);
-      setKernelAccount(data.kernelAccount);
-      setEntryPoint(data.entryPoint);
-      setKernelAccountClient(null);
-    }
-  }, [
-    data,
-    setValidator,
-    setKernelAccount,
-    setEntryPoint,
-    setKernelAccountClient,
-  ]);
 
   return {
     ...result,

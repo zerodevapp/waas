@@ -117,6 +117,12 @@ export function useCreateKernelClientPasskey({
       version,
     }),
     mutationFn,
+    onSuccess: (data) => {
+      setValidator(data.validator);
+      setKernelAccount(data.kernelAccount);
+      setEntryPoint(data.entryPoint);
+      setKernelAccountClient(null);
+    }
   });
 
   const connectRegister = useMemo(() => {
@@ -140,21 +146,6 @@ export function useCreateKernelClientPasskey({
         version,
       });
   }, [appId, mutate, client, version]);
-
-  useEffect(() => {
-    if (data) {
-      setValidator(data.validator);
-      setKernelAccount(data.kernelAccount);
-      setEntryPoint(data.entryPoint);
-      setKernelAccountClient(null);
-    }
-  }, [
-    data,
-    setValidator,
-    setKernelAccount,
-    setEntryPoint,
-    setKernelAccountClient,
-  ]);
 
   return {
     ...result,
