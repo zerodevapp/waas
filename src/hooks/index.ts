@@ -18,4 +18,6 @@ export { useSessionKernelClient } from "./useSessionKernelClient"
 
 export { useSessions } from "./useSessions"
 
-export { useSetKernelAccountClient } from "./useSetKernelAccountClient"
+export { useSetKernelClient } from "./useSetKernelClient"
+
+export { useDisconnectKernelClient } from "./useDisconnectKernelClient"

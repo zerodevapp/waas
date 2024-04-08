@@ -9,7 +9,8 @@ export {
   useSendUserOperationWithSession,
   useSessionKernelClient,
   useSessions,
-  useSetKernelAccountClient
+  useSetKernelClient,
+  useDisconnectKernelClient
 } from "./hooks"
 
 export {
