@@ -150,6 +150,7 @@ export function useCreateKernelClientPasskey({
   return {
     ...result,
     data,
+    isPending: !client || result.isPending,
     connectRegister,
     connectLogin,
   };

@@ -24,7 +24,7 @@ export type UseSendUserOperationWithSessionKey = {
 export type SendUserOperationWithSessionReturnType = Hash
 
 export type UseSendUserOperationWithSessionReturnType = {
-  write: ((parameters: SendUserOperationWithSessionVariables) => void) | undefined
+  write: ((parameters: SendUserOperationWithSessionVariables) => void)
 } & Omit<UseMutationResult<SendUserOperationWithSessionReturnType, unknown, UseSendUserOperationWithSessionKey, unknown>, 'mutate'>;
  
 
@@ -82,7 +82,6 @@ export function useSendUserOperationWithSession({sessionId}: UseSendUserOperatio
   });
 
   const write = useMemo(() => {
-    if (!kernelAccount || !kernelClient) return undefined;
     return (parameters: SendUserOperationWithSessionVariables) => {
       mutate({
         parameters,

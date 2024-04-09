@@ -19,7 +19,7 @@ export type UseSendUserOperationKey = {
 export type SendUserOperationReturnType = Hash
 
 export type UseSendUserOperationReturnType = {
-  write: ((parameters: SendUserOperationVariables) => void) | undefined
+  write: ((parameters: SendUserOperationVariables) => void)
 } & Omit<UseMutationResult<SendUserOperationReturnType, unknown, UseSendUserOperationKey, unknown>, 'mutate'>;
 
 function mutationKey({ ...config }: UseSendUserOperationKey) {
@@ -71,7 +71,6 @@ export function useSendUserOperation<
   });
 
   const write = useMemo(() => {
-    if (!kernelAccount || !kernelClient) return undefined;
     return (parameters: SendUserOperationVariables) => {
       mutate({
         parameters,

@@ -118,5 +118,6 @@ export function useCreateKernelClientEOA({
     ...result,
     data,
     connect,
+    isPending: !client || result.isPending,
   };
 }

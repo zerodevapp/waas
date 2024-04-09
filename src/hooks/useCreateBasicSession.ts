@@ -24,7 +24,7 @@ export type UseCreateBasicSessionKey = {
 };
 
 export type UseCreateBasicSessionReturnType = {
-  write?: ({permissions}: CreateBasicSessionVariables) => void;
+  write: ({permissions}: CreateBasicSessionVariables) => void;
 } & Omit<UseMutationResult<CreateBasicSessionReturnType, unknown, UseCreateBasicSessionKey, unknown>, 'mutate'>;
 
 export type CreateBasicSessionReturnType = {
@@ -100,7 +100,6 @@ export function useCreateBasicSession(): UseCreateBasicSessionReturnType {
   });
 
   const write = useMemo(() => {
-    if (!validator || !client || !entryPoint) return undefined;
     return ({permissions}: CreateBasicSessionVariables) =>
       mutate({
         permissions,
@@ -112,6 +111,7 @@ export function useCreateBasicSession(): UseCreateBasicSessionReturnType {
 
   return {
     ...result,
+    isPending: !client || result.isPending,
     write,
   };
 }

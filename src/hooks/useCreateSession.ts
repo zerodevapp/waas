@@ -32,7 +32,7 @@ export type CreateSessionReturnType = {
 }
 
 export type UseCreateSessionReturnType = {
-  write?: ({policies}: CreateSessionVariables) => void;
+  write: ({policies}: CreateSessionVariables) => void;
 } & Omit<UseMutationResult<CreateSessionReturnType, unknown, UseCreateSessionKey, unknown>, 'mutate'>;
 
 function mutationKey({ ...config }: UseCreateSessionKey) {
@@ -100,7 +100,6 @@ export function useCreateSession(): UseCreateSessionReturnType {
   });
 
   const write = useMemo(() => {
-    if (!validator || !client || !entryPoint) return undefined;
     return ({policies}: CreateSessionVariables) =>
       mutate({
         policies,
@@ -112,6 +111,7 @@ export function useCreateSession(): UseCreateSessionReturnType {
 
   return {
     ...result,
+    isPending: !client || result.isPending,
     write,
   };
 }
