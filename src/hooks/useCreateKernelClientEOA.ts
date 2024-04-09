@@ -4,8 +4,8 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { KernelSmartAccount, KernelValidator, createKernelAccount } from "@zerodev/sdk";
 import { walletClientToSmartAccountSigner } from "permissionless";
 import { useEffect, useMemo } from "react";
-import { type PublicClient } from "viem";
-import { useConfig, usePublicClient, type Config, type Connector } from "wagmi";
+import { type PublicClient,  } from "viem";
+import { useConfig, usePublicClient, type Config, type Connector, type CreateConnectorFn } from "wagmi";
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext";
 import { type KernelVersionType } from "../types";
 import { getEntryPointFromVersion } from "../utils/entryPoint";
@@ -16,11 +16,11 @@ export type UseCreateKernelClientEOAParameters = {
 };
 
 export type CreateKernelClientEOAVariables = {
-  connector: Connector | undefined;
+  connector: Connector | CreateConnectorFn;
 };
 
 export type UseCreateKernelClientEOAKey = {
-  connector: Connector | null | undefined;
+  connector: Connector | CreateConnectorFn | null | undefined;
   wagmiConfig: Config | undefined | null;
   publicClient: PublicClient | undefined | null;
   version: KernelVersionType;
