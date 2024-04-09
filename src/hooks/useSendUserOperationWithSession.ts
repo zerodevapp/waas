@@ -10,7 +10,7 @@ import { encodeFunctionData, type Hash } from "viem";
 import { useSessionKernelClient } from "./useSessionKernelClient";
 
 export type UseSendUserOperationWithSessionParameters = {
-  sessionId?: `0x${string}` | undefined;
+  sessionId?: `0x${string}` | null | undefined;
 };
 
 export type SendUserOperationWithSessionVariables = WriteContractParameters[];
@@ -63,9 +63,7 @@ async function mutationFn(config: UseSendUserOperationWithSessionKey) {
   return userOpHash;
 }
 
-export function useSendUserOperationWithSession({
-  sessionId,
-}: UseSendUserOperationWithSessionParameters): UseSendUserOperationWithSessionReturnType {
+export function useSendUserOperationWithSession({sessionId}: UseSendUserOperationWithSessionParameters = {}): UseSendUserOperationWithSessionReturnType {
   const {
     kernelClient,
     kernelAccount,

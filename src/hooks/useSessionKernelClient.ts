@@ -24,7 +24,7 @@ import { type SessionType } from "../types";
 import { useSessions } from "./useSessions";
 
 export type UseSessionKernelClientParameters = {
-  sessionId: `0x${string}` | null | undefined;
+  sessionId?: `0x${string}` | null | undefined;
 };
 
 export type SessionKernelClientKey = [
@@ -144,9 +144,7 @@ async function getSessionKernelClient({
   return { kernelClient, kernelAccount };
 }
 
-export function useSessionKernelClient({
-  sessionId,
-}: UseSessionKernelClientParameters): UseSessionKernelClientReturnType {
+export function useSessionKernelClient({sessionId}: UseSessionKernelClientParameters = {}): UseSessionKernelClientReturnType {
   const { appId, chain } = useZeroDevConfig();
   const client = usePublicClient();
   const { validator, kernelAccount, entryPoint } = useKernelAccount();
@@ -159,7 +157,7 @@ export function useSessionKernelClient({
       {
         publicClient: client,
         kernelAddress,
-        sessionId,
+        sessionId: sessionId,
         validator,
         session,
         appId,
