@@ -11,11 +11,11 @@ import { type KernelVersionType } from "../types";
 import { getEntryPointFromVersion } from "../utils/entryPoint";
 import {EntryPoint} from "permissionless/types";
 
-export type UseCreateKernelClientEOAArg = {
+export type UseCreateKernelClientEOAParameters = {
   version: KernelVersionType;
 };
 
-export type CreateKernelClientEOAArgs = {
+export type CreateKernelClientEOAVariables = {
   connector: Connector | undefined;
 };
 
@@ -33,7 +33,7 @@ export type CreateKernelClientEOAReturnType = {
 }
 
 export type UseCreateKernelClientEOAReturnType = {
-  connect: ({ connector }: CreateKernelClientEOAArgs) => void
+  connect: ({ connector }: CreateKernelClientEOAVariables) => void
 } & Omit<UseMutationResult<CreateKernelClientEOAReturnType, unknown, UseCreateKernelClientEOAKey, unknown>, 'mutate'>;
 
 function mutationKey({ ...config }: UseCreateKernelClientEOAKey) {
@@ -78,7 +78,7 @@ async function mutationFn(config: UseCreateKernelClientEOAKey): Promise<CreateKe
 
 export function useCreateKernelClientEOA({
   version,
-}: UseCreateKernelClientEOAArg): UseCreateKernelClientEOAReturnType {
+}: UseCreateKernelClientEOAParameters): UseCreateKernelClientEOAReturnType {
   const {
     setValidator,
     setKernelAccount,
@@ -105,7 +105,7 @@ export function useCreateKernelClientEOA({
   });
 
   const connect = useMemo(() => {
-    return ({ connector }: CreateKernelClientEOAArgs) =>
+    return ({ connector }: CreateKernelClientEOAVariables) =>
       mutate({
         connector,
         wagmiConfig: config,

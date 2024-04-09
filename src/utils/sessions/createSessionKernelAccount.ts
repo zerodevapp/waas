@@ -1,10 +1,8 @@
 import { type PermissionPlugin, type Policy } from "@zerodev/permissions";
-import { KernelValidator } from "@zerodev/sdk";
 import { SessionKeyPlugin, type Permission } from "@zerodev/session-key";
 import { ENTRYPOINT_ADDRESS_V06, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { type EntryPoint } from "permissionless/types";
 import {
-  PrivateKeyAccount,
   concat,
   keccak256,
   pad,
@@ -12,19 +10,9 @@ import {
   toHex,
   zeroAddress,
   type Abi,
-  type PublicClient,
 } from "viem";
 import { getSessionKernelAccount } from "./getSessionKernelAccount";
-
-export type CreateSessionKernelAccountType = {
-  sessionSigner: PrivateKeyAccount;
-  publicClient: PublicClient;
-  sudoValidator: KernelValidator<EntryPoint>;
-  entryPoint: EntryPoint;
-  policies?: Policy[];
-  permissions?: Permission<Abi>[];
-  enableSignature?: `0x${string}`;
-};
+import { type CreateSessionKernelAccountType } from "../../types";
 
 export const createSessionKernelAccount = async ({
   sessionSigner,

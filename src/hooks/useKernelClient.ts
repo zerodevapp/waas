@@ -1,6 +1,7 @@
 import {
   QueryFunction,
   QueryFunctionContext,
+  UseQueryResult,
   useQuery,
 } from "@tanstack/react-query";
 import {
@@ -34,11 +35,13 @@ export type GetKernelClientReturnType = {
   kernelClient: KernelAccountClient<EntryPoint>;
 };
 
-export type UseKernelClientReturnType = GetKernelClientReturnType & {
+export type UseKernelClientReturnType = {
+  kernelAccount: KernelSmartAccount<EntryPoint> | null;
+  kernelClient: KernelAccountClient<EntryPoint>;
   isConnected: boolean;
   isLoading: boolean;
   error: unknown;
-}
+} & UseQueryResult<GetKernelClientReturnType, unknown>;
 
 async function getKernelClient({
   queryKey,
@@ -108,7 +111,7 @@ export function useKernelClient(): UseKernelClientReturnType {
   const { kernelAccount, entryPoint, kernelAccountClient } = useKernelAccount();
   const client = usePublicClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, ...result } = useQuery({
     queryKey: [
       "session_kernel_client",
       {
@@ -127,7 +130,6 @@ export function useKernelClient(): UseKernelClientReturnType {
   return {
     ...data,
     isConnected: !!data?.kernelClient && !!data?.kernelAccount,
-    isLoading,
-    error,
+    ...result
   };
 }

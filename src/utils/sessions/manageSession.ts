@@ -5,20 +5,12 @@ import { generatePrivateKey } from "viem/accounts";
 import {
   desirializePolicy,
   serializePolicy,
-  type EncodedSessionType,
 } from "./encodeSessionPolicy";
-
-export type SessionInfoType = {
-  smartAccount: `0x${string}`;
-  enableSignature: `0x${string}`;
-  policies: Policy[];
-  permissions: Permission<Abi>[];
-  sessionKey: `0x${string}`;
-};
-
-export type SessionType = {
-  [sessionId: `0x${string}`]: SessionInfoType;
-};
+import { 
+  type EncodedSessionType, 
+  type SessionType,
+  type SessionInfoType
+} from "../../types";
 
 export function createSessionKey() {
   return generatePrivateKey();

@@ -16,11 +16,11 @@ import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn";
 
 type PasskeConnectType = "register" | "login";
 
-export type UseCreateKernelClientPasskeyArg = {
+export type UseCreateKernelClientPasskeyParameters = {
   version: KernelVersionType;
 };
-export type CreateKernelClientPasskeyArgs = {
-  username: string | undefined;
+export type CreateKernelClientPasskeyVariables = {
+  username: string;
 };
 
 export type UseCreateKernelClientPasskeyKey = {
@@ -38,7 +38,7 @@ export type CreateKernelClientPasskeyReturnType = {
 }
 
 export type UseCreateKernelClientPasskeyReturnType = {
-  connectRegister: ({ username }: CreateKernelClientPasskeyArgs) => void,
+  connectRegister: ({ username }: CreateKernelClientPasskeyVariables) => void,
   connectLogin: () => void,
 } & Omit<UseMutationResult<CreateKernelClientPasskeyReturnType, unknown, UseCreateKernelClientPasskeyKey, unknown>, 'mutate'>;
 
@@ -98,7 +98,7 @@ async function mutationFn(config: UseCreateKernelClientPasskeyKey): Promise<Crea
 
 export function useCreateKernelClientPasskey({
   version,
-}: UseCreateKernelClientPasskeyArg): UseCreateKernelClientPasskeyReturnType {
+}: UseCreateKernelClientPasskeyParameters): UseCreateKernelClientPasskeyReturnType {
   const {
     setValidator,
     setKernelAccount,
@@ -126,7 +126,7 @@ export function useCreateKernelClientPasskey({
   });
 
   const connectRegister = useMemo(() => {
-    return ({ username }: CreateKernelClientPasskeyArgs) =>
+    return ({ username }: CreateKernelClientPasskeyVariables) =>
       mutate({
         appId,
         publicClient: client,

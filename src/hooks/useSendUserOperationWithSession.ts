@@ -9,14 +9,14 @@ import { useMemo } from "react";
 import { encodeFunctionData, type Hash } from "viem";
 import { useSessionKernelClient } from "./useSessionKernelClient";
 
-export type UseSendUserOperationWithSessionArgs = {
+export type UseSendUserOperationWithSessionParameters = {
   sessionId?: `0x${string}` | undefined;
 };
 
-export type SendUserOperationWithSessionWriteArgs = WriteContractParameters[];
+export type SendUserOperationWithSessionVariables = WriteContractParameters[];
 
 export type UseSendUserOperationWithSessionKey = {
-  parameters: SendUserOperationWithSessionWriteArgs;
+  parameters: SendUserOperationWithSessionVariables;
   kernelClient: KernelAccountClient<EntryPoint> | undefined;
   kernelAccount: KernelSmartAccount<EntryPoint> | undefined;
 };
@@ -24,7 +24,7 @@ export type UseSendUserOperationWithSessionKey = {
 export type SendUserOperationWithSessionReturnType = Hash
 
 export type UseSendUserOperationWithSessionReturnType = {
-  write: ((parameters: SendUserOperationWithSessionWriteArgs) => void) | undefined
+  write: ((parameters: SendUserOperationWithSessionVariables) => void) | undefined
 } & Omit<UseMutationResult<SendUserOperationWithSessionReturnType, unknown, UseSendUserOperationWithSessionKey, unknown>, 'mutate'>;
  
 
@@ -65,7 +65,7 @@ async function mutationFn(config: UseSendUserOperationWithSessionKey) {
 
 export function useSendUserOperationWithSession({
   sessionId,
-}: UseSendUserOperationWithSessionArgs): UseSendUserOperationWithSessionReturnType {
+}: UseSendUserOperationWithSessionParameters): UseSendUserOperationWithSessionReturnType {
   const {
     kernelClient,
     kernelAccount,
@@ -76,7 +76,7 @@ export function useSendUserOperationWithSession({
 
   const { mutate, error, ...result } = useMutation({
     mutationKey: mutationKey({
-      parameters: {} as SendUserOperationWithSessionWriteArgs,
+      parameters: {} as SendUserOperationWithSessionVariables,
       kernelClient,
       kernelAccount,
     }),
@@ -85,7 +85,7 @@ export function useSendUserOperationWithSession({
 
   const write = useMemo(() => {
     if (!kernelAccount || !kernelClient) return undefined;
-    return (parameters: SendUserOperationWithSessionWriteArgs) => {
+    return (parameters: SendUserOperationWithSessionVariables) => {
       mutate({
         parameters,
         kernelClient,

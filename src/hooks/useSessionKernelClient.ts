@@ -1,6 +1,7 @@
 import {
   QueryFunction,
   QueryFunctionContext,
+  UseQueryResult,
   useQuery,
 } from "@tanstack/react-query";
 import {
@@ -19,10 +20,10 @@ import { usePublicClient } from "wagmi";
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext";
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext";
 import { getSessionKernelAccount } from "../utils/sessions/getSessionKernelAccount";
-import { type SessionType } from "../utils/sessions/manageSession";
+import { type SessionType } from "../types";
 import { useSessions } from "./useSessions";
 
-export type UseSessionKernelClientArgs = {
+export type UseSessionKernelClientParameters = {
   sessionId: `0x${string}` | null | undefined;
 };
 
@@ -45,10 +46,12 @@ export type GetSessionKernelClientReturnType = {
   kernelAccount: KernelSmartAccount<EntryPoint>;
 }
 
-export type UseSessionKernelClientReturnType = GetSessionKernelClientReturnType & {
+export type UseSessionKernelClientReturnType = {
+  kernelClient: KernelAccountClient<EntryPoint>;
+  kernelAccount: KernelSmartAccount<EntryPoint>;
   isLoading: boolean;
   error: unknown;
-}
+} & UseQueryResult<GetSessionKernelClientReturnType, unknown>;
 
 async function getSessionKernelClient({
   queryKey,
@@ -143,14 +146,14 @@ async function getSessionKernelClient({
 
 export function useSessionKernelClient({
   sessionId,
-}: UseSessionKernelClientArgs): UseSessionKernelClientReturnType {
+}: UseSessionKernelClientParameters): UseSessionKernelClientReturnType {
   const { appId, chain } = useZeroDevConfig();
   const client = usePublicClient();
   const { validator, kernelAccount, entryPoint } = useKernelAccount();
   const session = useSessions();
   const kernelAddress = kernelAccount?.address;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, ...result } = useQuery({
     queryKey: [
       "session_kernel_client",
       {
@@ -176,7 +179,6 @@ export function useSessionKernelClient({
 
   return {
     ...data,
-    isLoading,
-    error,
+    ...result
   };
 }

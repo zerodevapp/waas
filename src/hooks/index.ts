@@ -1,23 +1,76 @@
 export { useWalletConnect } from "./useWalletConnect"
 
-export { useCreateBasicSession } from "./useCreateBasicSession"
+export { 
+  useCreateBasicSession, 
+  type UseCreateBasicSessionReturnType,
+  type CreateBasicSessionVariables,
+  type CreateBasicSessionReturnType,
+} from "./useCreateBasicSession"
 
-export { useCreateSession } from "./useCreateSession"
+export { 
+  useCreateSession,
+  type UseCreateSessionReturnType,
+  type CreateSessionVariables,
+  type CreateSessionReturnType,
+} from "./useCreateSession"
 
-export { useCreateKernelClientEOA } from "./useCreateKernelClientEOA"
+export { 
+  useCreateKernelClientEOA,
+  type UseCreateKernelClientEOAParameters,
+  type UseCreateKernelClientEOAReturnType,
+  type CreateKernelClientEOAVariables,
+  type CreateKernelClientEOAReturnType,
+} from "./useCreateKernelClientEOA"
 
-export { useCreateKernelClientPasskey } from "./useCreateKernelClientPasskey"
+export { 
+  useCreateKernelClientPasskey,
+  type UseCreateKernelClientPasskeyParameters,
+  type UseCreateKernelClientPasskeyReturnType,
+  type CreateKernelClientPasskeyVariables,
+  type CreateKernelClientPasskeyReturnType,
+} from "./useCreateKernelClientPasskey"
 
-export { useKernelClient } from "./useKernelClient"
+export { 
+  useKernelClient,
+  type UseKernelClientReturnType,
+  type GetKernelClientReturnType,
+} from "./useKernelClient"
 
-export { useSendUserOperation } from "./useSendUserOperation"
+export { 
+  useSendUserOperation,
+  type UseSendUserOperationReturnType,
+  type SendUserOperationVariables,
+  type SendUserOperationReturnType
+} from "./useSendUserOperation"
 
-export { useSendUserOperationWithSession } from "./useSendUserOperationWithSession"
+export { 
+  useSendUserOperationWithSession,
+  type UseSendUserOperationWithSessionParameters,
+  type UseSendUserOperationWithSessionReturnType,
+  type SendUserOperationWithSessionVariables,
+  type SendUserOperationWithSessionReturnType,
+} from "./useSendUserOperationWithSession"
 
-export { useSessionKernelClient } from "./useSessionKernelClient"
+export { 
+  useSessionKernelClient,
+  type UseSessionKernelClientParameters,
+  type UseSessionKernelClientReturnType,
+  type GetSessionKernelClientReturnType
+} from "./useSessionKernelClient"
 
-export { useSessions } from "./useSessions"
+export { 
+  useSessions,
+  type useSessionsReturnType,
+} from "./useSessions"
 
-export { useSetKernelClient } from "./useSetKernelClient"
+export { 
+  useSetKernelClient,
+  type UseSetKernelClientReturnType,
+  type SetKernelClientReturnType,
+} from "./useSetKernelClient"
 
-export { useDisconnectKernelClient } from "./useDisconnectKernelClient"
+export { 
+  useDisconnectKernelClient,
+  type UseDisconnectKernelClientReturnType,
+  type DisconnectKernelClientReturnType,
+} from "./useDisconnectKernelClient"
