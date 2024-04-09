@@ -1,20 +1,21 @@
 import { useMutation, type UseMutationResult } from "@tanstack/react-query";
-import { type KernelAccountClient } from "@zerodev/sdk";
+import { type KernelAccountClient, type KernelSmartAccount } from "@zerodev/sdk";
 import { type EntryPoint } from "permissionless/types";
 import { useContext, useMemo } from "react";
 import { ZeroDevValidatorContext } from "../providers/ZeroDevValidatorContext";
+import { type Transport, type Chain } from "viem";
 
 export type UseSetKernelClientKey = {
-  kernelClient: KernelAccountClient<EntryPoint> | undefined;
+  kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | undefined;
   setKernelAccountClient: (
-    kernelAccountClient: KernelAccountClient<EntryPoint> | null
+    kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null
   ) => void;
 };
 
 export type SetKernelClientReturnType = boolean;
 
 export type UseSetKernelClientReturnType = {
-  setKernelClient: (kernelClient: KernelAccountClient<EntryPoint>) => void;
+  setKernelClient: (kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>) => void;
 } & Omit<
   UseMutationResult<
     SetKernelClientReturnType,
@@ -63,7 +64,7 @@ export function useSetKernelClient(): UseSetKernelClientReturnType {
   });
 
   const setKernelClient = useMemo(() => {
-    return (kernelClient: KernelAccountClient<EntryPoint>) => {
+    return (kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>) => {
       mutate({
         setKernelAccountClient,
         kernelClient,

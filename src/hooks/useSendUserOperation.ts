@@ -12,8 +12,8 @@ export type SendUserOperationVariables = WriteContractParameters[];
 
 export type UseSendUserOperationKey = {
   parameters: SendUserOperationVariables;
-  kernelClient: KernelAccountClient<EntryPoint> | null;
-  kernelAccount: KernelSmartAccount<EntryPoint> | null;
+  kernelClient: KernelAccountClient<EntryPoint> | undefined | null;
+  kernelAccount: KernelSmartAccount<EntryPoint> | undefined | null;
 };
 
 export type SendUserOperationReturnType = Hash

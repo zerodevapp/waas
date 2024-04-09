@@ -7,6 +7,7 @@ import {
 import { type EntryPoint } from "permissionless/types";
 import { useMemo } from "react";
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext";
+import { type Transport, type Chain } from "viem";
 
 export type UseDisconnectKernelClientKey = {
   setValidator:
@@ -19,7 +20,7 @@ export type UseDisconnectKernelClientKey = {
     | null;
   setEntryPoint: ((entryPoint: EntryPoint | null) => void) | null | undefined;
   setKernelAccountClient:
-    | ((kernelAccountClient: KernelAccountClient<EntryPoint> | null) => void)
+    | ((kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null) => void)
     | null
     | undefined;
 };

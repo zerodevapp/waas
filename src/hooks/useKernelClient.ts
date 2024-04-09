@@ -13,7 +13,7 @@ import {
 import { bundlerActions } from "permissionless";
 import { pimlicoBundlerActions } from "permissionless/actions/pimlico";
 import { type EntryPoint } from "permissionless/types";
-import { createClient, http, type Chain, type PublicClient } from "viem";
+import { createClient, http, type Chain, type PublicClient, type Address, type Transport } from "viem";
 import { usePublicClient } from "wagmi";
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext";
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext";
@@ -24,20 +24,22 @@ export type KernelClientKey = [
     appId: string | undefined | null;
     chain: Chain | null;
     kernelAccount: KernelSmartAccount<EntryPoint> | undefined | null;
-    kernelAccountClient: KernelAccountClient<EntryPoint> | undefined | null;
+    kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | undefined | null;
     publicClient: PublicClient | undefined | null;
     entryPoint: EntryPoint | null;
   }
 ];
 
 export type GetKernelClientReturnType = {
-  kernelAccount: KernelSmartAccount<EntryPoint> | null;
-  kernelClient: KernelAccountClient<EntryPoint>;
+  address: Address;
+  kernelAccount: KernelSmartAccount<EntryPoint>;
+  kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>;
 };
 
 export type UseKernelClientReturnType = {
-  kernelAccount: KernelSmartAccount<EntryPoint> | null;
-  kernelClient: KernelAccountClient<EntryPoint>;
+  address: Address | undefined;
+  kernelAccount: KernelSmartAccount<EntryPoint> | undefined;
+  kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | undefined;
   isConnected: boolean;
   isLoading: boolean;
   error: unknown;
@@ -61,7 +63,8 @@ async function getKernelClient({
   if (kernelAccountClient) {
     return {
       kernelClient: kernelAccountClient,
-      kernelAccount: kernelAccountClient.account ?? null,
+      kernelAccount: kernelAccountClient.account,
+      address: kernelAccountClient.account.address,
     };
   }
 
@@ -102,8 +105,8 @@ async function getKernelClient({
         });
       },
     },
-  }) as KernelAccountClient<EntryPoint>;
-  return { kernelClient, kernelAccount };
+  }) as KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>;
+  return { kernelClient, kernelAccount, address: kernelAccount.address };
 }
 
 export function useKernelClient(): UseKernelClientReturnType {
@@ -129,7 +132,7 @@ export function useKernelClient(): UseKernelClientReturnType {
 
   return {
     ...data,
-    isConnected: !!data?.kernelClient && !!data?.kernelAccount,
+    isConnected: !!data?.kernelClient,
     ...result
   };
 }
