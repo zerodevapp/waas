@@ -7,3 +7,9 @@ export {
   type SessionInfoType,
   type SessionType
 } from "./session";
+
+export {
+  type PaymasterERC20,
+  type PaymasterSPONSOR,
+  type PaymasterType,
+} from "./paymaster";

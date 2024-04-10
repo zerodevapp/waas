@@ -7,16 +7,18 @@ import {
 import { type EntryPoint } from "permissionless/types";
 import { useMemo } from "react";
 import { encodeFunctionData, type Hash } from "viem";
+import { type PaymasterERC20, type PaymasterSPONSOR } from "../types";
 import { useSessionKernelClient } from "./useSessionKernelClient";
 
 export type UseSendUserOperationWithSessionParameters = {
   sessionId?: `0x${string}` | null | undefined;
+  paymaster?: PaymasterERC20 | PaymasterSPONSOR;
 };
 
 export type SendUserOperationWithSessionVariables = WriteContractParameters[];
 
 export type UseSendUserOperationWithSessionKey = {
-  parameters: SendUserOperationWithSessionVariables;
+  variables: SendUserOperationWithSessionVariables;
   kernelClient: KernelAccountClient<EntryPoint> | undefined;
   kernelAccount: KernelSmartAccount<EntryPoint> | undefined;
 };
@@ -25,17 +27,17 @@ export type SendUserOperationWithSessionReturnType = Hash
 
 export type UseSendUserOperationWithSessionReturnType = {
   isDisabled: boolean;
-  write: ((parameters: SendUserOperationWithSessionVariables) => void)
+  write: ((variables: SendUserOperationWithSessionVariables) => void)
 } & Omit<UseMutationResult<SendUserOperationWithSessionReturnType, unknown, UseSendUserOperationWithSessionKey, unknown>, 'mutate'>;
  
 
 function mutationKey({ ...config }: UseSendUserOperationWithSessionKey) {
-  const { parameters, kernelClient, kernelAccount } = config;
+  const { variables, kernelClient, kernelAccount } = config;
 
   return [
     {
       entity: "sendUserOperationWithSession",
-      parameters,
+      variables,
       kernelClient,
       kernelAccount,
     },
@@ -43,7 +45,7 @@ function mutationKey({ ...config }: UseSendUserOperationWithSessionKey) {
 }
 
 async function mutationFn(config: UseSendUserOperationWithSessionKey) {
-  const { parameters, kernelClient, kernelAccount } = config;
+  const { variables, kernelClient, kernelAccount } = config;
 
   if (!kernelClient || !kernelAccount) {
     throw new Error("Kernel Client is required");
@@ -52,7 +54,7 @@ async function mutationFn(config: UseSendUserOperationWithSessionKey) {
   const userOpHash = await kernelClient.sendUserOperation({
     userOperation: {
       callData: await kernelAccount.encodeCallData(
-        parameters.map((p) => ({
+        variables.map((p) => ({
           to: p.address,
           value: p.value ?? 0n,
           data: encodeFunctionData(p),
@@ -64,19 +66,18 @@ async function mutationFn(config: UseSendUserOperationWithSessionKey) {
   return userOpHash;
 }
 
-export function useSendUserOperationWithSession({sessionId}: UseSendUserOperationWithSessionParameters = {}): UseSendUserOperationWithSessionReturnType {
-  const {
+export function useSendUserOperationWithSession(
+  parameters: UseSendUserOperationWithSessionParameters = {}
+): UseSendUserOperationWithSessionReturnType {  const {
     kernelClient,
     kernelAccount,
     isLoading,
     error: clientError,
-  } = useSessionKernelClient({
-    sessionId: sessionId,
-  });
+  } = useSessionKernelClient(parameters);
 
   const { mutate, error, ...result } = useMutation({
     mutationKey: mutationKey({
-      parameters: {} as SendUserOperationWithSessionVariables,
+      variables: {} as SendUserOperationWithSessionVariables,
       kernelClient,
       kernelAccount,
     }),
@@ -84,9 +85,9 @@ export function useSendUserOperationWithSession({sessionId}: UseSendUserOperatio
   });
 
   const write = useMemo(() => {
-    return (parameters: SendUserOperationWithSessionVariables) => {
+    return (variables: SendUserOperationWithSessionVariables) => {
       mutate({
-        parameters,
+        variables,
         kernelClient,
         kernelAccount,
       });

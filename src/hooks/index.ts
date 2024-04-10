@@ -32,12 +32,14 @@ export {
 
 export { 
   useKernelClient,
+  type UseKernelClientParameters,
   type UseKernelClientReturnType,
   type GetKernelClientReturnType,
 } from "./useKernelClient"
 
 export { 
   useSendUserOperation,
+  type UseSendUserOperationParameters,
   type UseSendUserOperationReturnType,
   type SendUserOperationVariables,
   type SendUserOperationReturnType
