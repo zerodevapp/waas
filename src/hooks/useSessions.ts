@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { SessionContext } from "../providers/SessionContext";
-import {type SessionInfoType} from "../types";
+import {type SessionType} from "../types";
 
-export type useSessionsReturnType = SessionInfoType;
+export type useSessionsReturnType = SessionType | null;
 
 export function useSessions(): useSessionsReturnType {
   const { sessions } = useContext(SessionContext);

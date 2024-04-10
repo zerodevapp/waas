@@ -14,7 +14,7 @@ import {
 
 import { Permission } from "@zerodev/session-key";
 import { type Abi } from "viem";
-import { type SessionType } from "../utils/sessions/manageSession";
+import { type SessionType } from "../types";
 
 type UpdateSessionArgs = {
   sessionId: `0x${string}`;

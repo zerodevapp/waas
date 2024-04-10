@@ -24,6 +24,7 @@ export type UseSendUserOperationWithSessionKey = {
 export type SendUserOperationWithSessionReturnType = Hash
 
 export type UseSendUserOperationWithSessionReturnType = {
+  isDisabled: boolean;
   write: ((parameters: SendUserOperationWithSessionVariables) => void)
 } & Omit<UseMutationResult<SendUserOperationWithSessionReturnType, unknown, UseSendUserOperationWithSessionKey, unknown>, 'mutate'>;
  
@@ -67,6 +68,7 @@ export function useSendUserOperationWithSession({sessionId}: UseSendUserOperatio
   const {
     kernelClient,
     kernelAccount,
+    isLoading,
     error: clientError,
   } = useSessionKernelClient({
     sessionId: sessionId,
@@ -93,6 +95,8 @@ export function useSendUserOperationWithSession({sessionId}: UseSendUserOperatio
 
   return {
     ...result,
+    isDisabled: !!clientError,
+    isPending: isLoading || result.isPending,
     error: error || clientError,
     write,
   };
