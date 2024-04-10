@@ -74,3 +74,10 @@ export {
   type UseDisconnectKernelClientReturnType,
   type DisconnectKernelClientReturnType,
 } from "./useDisconnectKernelClient"
+
+export {
+  useBalance,
+  type UseBalanceParameters,
+  type UseBalanceReturnType,
+  type GetBalanceReturnType,
+} from "./useBalance";
