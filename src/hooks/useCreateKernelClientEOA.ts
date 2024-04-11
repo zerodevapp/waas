@@ -69,7 +69,6 @@ async function mutationFn(config: UseCreateKernelClientEOAKey): Promise<CreateKe
     entryPoint: entryPoint,
     plugins: {
       sudo: ecdsaValidator,
-      entryPoint: entryPoint,
     },
   });
 

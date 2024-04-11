@@ -89,7 +89,6 @@ async function mutationFn(config: UseCreateKernelClientPasskeyKey): Promise<Crea
     entryPoint: entryPoint,
     plugins: {
       sudo: passkeyValidator,
-      entryPoint: entryPoint,
     },
   });
 

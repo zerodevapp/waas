@@ -68,7 +68,6 @@ export const getSessionKernelAccount = async ({
     plugins: {
       sudo: sudoValidator,
       regular: sessionValidator,
-      entryPoint: entryPoint,
       action: {
         address: zeroAddress,
         selector: executeDataSelector,
@@ -109,6 +108,7 @@ const getSessionValidator = async ({
       validatorData: {
         permissions: permissions,
       },
+      entryPoint: entryPoint,
     });
   }
   const ecdsaModularSigner = toECDSASigner({ signer: sessionSigner });
