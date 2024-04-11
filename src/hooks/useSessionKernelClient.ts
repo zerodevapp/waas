@@ -27,6 +27,7 @@ import {
   type SessionType,
 } from "../types";
 import { useSessions } from "./useSessions";
+import { ZERODEV_BUNDLER_URL, ZERODEV_PAYMASTER_URL } from "../utils/constants";
 
 export type UseSessionKernelClientParameters = {
   sessionId?: `0x${string}` | null | undefined;
@@ -117,7 +118,7 @@ async function getSessionKernelClient({
     account: kernelAccount,
     chain: chain,
     bundlerTransport: http(
-      `https://meta-aa-provider.onrender.com/api/v3/bundler/${appId}?paymasterProvider=PIMLICO`
+      `${ZERODEV_BUNDLER_URL}/${appId}?paymasterProvider=PIMLICO`
     ),
     entryPoint: entryPoint,
     middleware: {
@@ -125,7 +126,7 @@ async function getSessionKernelClient({
         const client = createClient({
           chain: chain,
           transport: http(
-            `https://meta-aa-provider.onrender.com/api/v3/bundler/${appId}?paymasterProvider=PIMLICO`
+            `${ZERODEV_BUNDLER_URL}/${appId}?paymasterProvider=PIMLICO`
           ),
         })
           .extend(bundlerActions(entryPoint))
@@ -152,7 +153,7 @@ async function getSessionKernelClient({
           entryPoint: entryPoint,
           chain: chain,
           transport: http(
-            `https://meta-aa-provider.onrender.com/api/v2/paymaster/${appId}?paymasterProvider=PIMLICO`
+            `${ZERODEV_PAYMASTER_URL}/${appId}?paymasterProvider=PIMLICO`
           ),
         });
         return kernelPaymaster.sponsorUserOperation({

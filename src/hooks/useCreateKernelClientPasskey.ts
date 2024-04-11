@@ -13,6 +13,7 @@ import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext";
 import { type KernelVersionType } from "../types";
 import { getEntryPointFromVersion } from "../utils/entryPoint";
 import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn";
+import { ZERODEV_PASSKEY_URL } from "../utils/constants";
 
 type PasskeConnectType = "register" | "login";
 
@@ -73,13 +74,13 @@ async function mutationFn(config: UseCreateKernelClientPasskeyKey): Promise<Crea
     }
     passkeyValidator = await createPasskeyValidator(publicClient, {
       passkeyName: username,
-      passkeyServerUrl: `https://passkeys.zerodev.app/api/v3/${appId}`,
+      passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId}`,
       entryPoint: entryPoint,
       validatorAddress: webauthnValidator,
     });
   } else {
     passkeyValidator = await getPasskeyValidator(publicClient!, {
-      passkeyServerUrl: `https://passkeys.zerodev.app/api/v3/${appId!}`,
+      passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId!}`,
       entryPoint: entryPoint,
       validatorAddress: webauthnValidator,
     });
