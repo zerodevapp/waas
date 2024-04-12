@@ -13,6 +13,7 @@ import {
   type RateLimitPolicyParams,
   type SignatureCallerPolicyParams,
   type SudoPolicyParams,
+  type TimestampPolicyParams
 } from "@zerodev/permissions/policies";
 
 export type CreateSessionKernelAccountType = {
@@ -29,11 +30,14 @@ export type EncodedPolicy = {
   getPolicyData: `0x${string}`;
   getPolicyInfoInBytes: `0x${string}`;
   policyParams:
-    | CallPolicyParams<Abi | readonly unknown[], string>
-    | GasPolicyParams
-    | RateLimitPolicyParams
-    | SignatureCallerPolicyParams
-    | SudoPolicyParams;
+    | (CallPolicyParams<Abi | readonly unknown[], string> & {
+        type: "call";
+      })
+    | (GasPolicyParams & { type: "gas" })
+    | (RateLimitPolicyParams & { type: "rate-limit" })
+    | (SignatureCallerPolicyParams & { type: "signature-caller" })
+    | (SudoPolicyParams & { type: "sudo" })
+    | (TimestampPolicyParams & { type: "timestamp" });
 };
 
 export type EncodedSessionInfoType = {

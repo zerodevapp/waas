@@ -11,10 +11,8 @@ import {
   createZeroDevPaymasterClient,
   gasTokenAddresses
 } from "@zerodev/sdk";
-import { bundlerActions } from "permissionless";
-import { pimlicoBundlerActions } from "permissionless/actions/pimlico";
 import { type EntryPoint } from "permissionless/types";
-import { createClient, http, type Chain, type PublicClient, type Address, type Transport } from "viem";
+import { http, type Chain, type PublicClient, type Address, type Transport } from "viem";
 import { usePublicClient } from "wagmi";
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext";
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext";
@@ -88,22 +86,9 @@ async function getKernelClient({
       `${ZERODEV_BUNDLER_URL}/${appId!}?paymasterProvider=PIMLICO`
     ),
     entryPoint: entryPoint,
-    middleware: {
-      gasPrice: async () => {
-        const client = createClient({
-          chain: chain,
-          transport: http(
-            `${ZERODEV_BUNDLER_URL}/${appId!}?paymasterProvider=PIMLICO`
-          ),
-        })
-          .extend(bundlerActions(entryPoint))
-          .extend(pimlicoBundlerActions(entryPoint));
-        return (await client.getUserOperationGasPrice()).fast;
-      },
+    middleware: !paymaster?.type ? undefined : {      
       sponsorUserOperation: async ({ userOperation }) => {
         let gasToken;
-        if (!paymaster?.type) return userOperation;
-
         if (paymaster.type === "ERC20") {
           const chainId = chain.id as keyof typeof gasTokenAddresses;
           if (
