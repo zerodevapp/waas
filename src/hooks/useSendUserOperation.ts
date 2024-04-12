@@ -17,6 +17,7 @@ export type SendUserOperationVariables = WriteContractParameters[];
 export type UseSendUserOperationParameters = {
   paymaster?: PaymasterERC20 | PaymasterSPONSOR;
   isParallel?: boolean;
+  nonceKey?: string;
 };
 
 export type UseSendUserOperationKey = {
@@ -25,6 +26,7 @@ export type UseSendUserOperationKey = {
   kernelAccount: KernelSmartAccount<EntryPoint> | undefined | null;
   isParallel: boolean;
   seed: string
+  nonceKey: string | undefined;
 };
 
 export type SendUserOperationReturnType = Hash
@@ -34,7 +36,7 @@ export type UseSendUserOperationReturnType = {
 } & Omit<UseMutationResult<SendUserOperationReturnType, unknown, UseSendUserOperationKey, unknown>, 'mutate'>;
 
 function mutationKey({ ...config }: UseSendUserOperationKey) {
-  const { kernelAccount, kernelClient, variables, isParallel, seed } = config;
+  const { kernelAccount, kernelClient, variables, isParallel, seed, nonceKey } = config;
 
   return [
     {
@@ -43,21 +45,24 @@ function mutationKey({ ...config }: UseSendUserOperationKey) {
       kernelClient,
       variables,
       isParallel,
-      seed
+      seed,
+      nonceKey
     },
   ] as const;
 }
 
 async function mutationFn(config: UseSendUserOperationKey): Promise<SendUserOperationReturnType> {
-  const { kernelAccount, kernelClient, variables, isParallel, seed } = config;
+  const { kernelAccount, kernelClient, variables, isParallel, seed, nonceKey } = config;
 
   if (!kernelClient || !kernelAccount) {
     throw new Error("Kernel Client is required");
   }
+
+  const seedForNonce = nonceKey ? nonceKey : seed;
   let nonce;
-  if (isParallel) {
+  if (nonceKey || isParallel) {
     const customNonceKey = getCustomNonceKeyFromString(
-      seed,
+      seedForNonce,
       kernelAccount.entryPoint
     )
     nonce = await kernelAccount.getNonce(customNonceKey)
@@ -80,7 +85,7 @@ async function mutationFn(config: UseSendUserOperationKey): Promise<SendUserOper
 export function useSendUserOperation(
   parameters: UseSendUserOperationParameters = {}
 ): UseSendUserOperationReturnType {
-  const { isParallel = true } = parameters;
+  const { isParallel = true, nonceKey } = parameters;
   const { kernelAccount, kernelClient, error } = useKernelClient(parameters);
 
   const seed = useMemo(() => generateRandomString(), []);
@@ -91,7 +96,8 @@ export function useSendUserOperation(
       kernelAccount,
       variables: {} as SendUserOperationVariables,
       isParallel: isParallel,
-      seed
+      seed,
+      nonceKey
     }),
     mutationFn,
   });
@@ -103,7 +109,8 @@ export function useSendUserOperation(
         kernelAccount,
         kernelClient,
         isParallel: isParallel,
-        seed: generateRandomString()
+        seed: generateRandomString(),
+        nonceKey
       });
     };
   }, [mutate, kernelClient, kernelAccount, isParallel]);

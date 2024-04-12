@@ -16,6 +16,7 @@ export type UseSendUserOperationWithSessionParameters = {
   sessionId?: `0x${string}` | null | undefined;
   paymaster?: PaymasterERC20 | PaymasterSPONSOR;
   isParallel?: boolean;
+  nonceKey?: string;
 };
 
 export type SendUserOperationWithSessionVariables = WriteContractParameters[];
@@ -25,7 +26,8 @@ export type UseSendUserOperationWithSessionKey = {
   kernelClient: KernelAccountClient<EntryPoint> | undefined;
   kernelAccount: KernelSmartAccount<EntryPoint> | undefined;
   isParallel: boolean;
-  seed: string
+  seed: string;
+  nonceKey: string | undefined;
 };
 
 export type SendUserOperationWithSessionReturnType = Hash
@@ -37,7 +39,7 @@ export type UseSendUserOperationWithSessionReturnType = {
  
 
 function mutationKey({ ...config }: UseSendUserOperationWithSessionKey) {
-  const { variables, kernelClient, kernelAccount, isParallel, seed } = config;
+  const { variables, kernelClient, kernelAccount, isParallel, seed, nonceKey } = config;
 
   return [
     {
@@ -46,21 +48,24 @@ function mutationKey({ ...config }: UseSendUserOperationWithSessionKey) {
       kernelClient,
       kernelAccount,
       isParallel,
-      seed
+      seed,
+      nonceKey
     },
   ] as const;
 }
 
 async function mutationFn(config: UseSendUserOperationWithSessionKey) {
-  const { variables, kernelClient, kernelAccount, isParallel, seed } = config;
+  const { variables, kernelClient, kernelAccount, isParallel, seed, nonceKey } = config;
 
   if (!kernelClient || !kernelAccount) {
     throw new Error("Kernel Client is required");
   }
+
+  const seedForNonce = nonceKey ? nonceKey : seed;
   let nonce;
-  if (isParallel) {
+  if (nonceKey || isParallel) {
     const customNonceKey = getCustomNonceKeyFromString(
-      seed,
+      seedForNonce,
       kernelAccount.entryPoint
     )
     nonce = await kernelAccount.getNonce(customNonceKey)
@@ -85,7 +90,7 @@ async function mutationFn(config: UseSendUserOperationWithSessionKey) {
 export function useSendUserOperationWithSession(
   parameters: UseSendUserOperationWithSessionParameters = {}
 ): UseSendUserOperationWithSessionReturnType { 
-  const { isParallel = true } = parameters;
+  const { isParallel = true, nonceKey } = parameters;
   const {
     kernelClient,
     kernelAccount,
@@ -101,7 +106,8 @@ export function useSendUserOperationWithSession(
       kernelClient,
       kernelAccount,
       isParallel: isParallel,
-      seed
+      seed,
+      nonceKey
     }),
     mutationFn,
   });
@@ -113,7 +119,8 @@ export function useSendUserOperationWithSession(
         kernelClient,
         kernelAccount,
         isParallel: isParallel,
-        seed: generateRandomString()
+        seed: generateRandomString(),
+        nonceKey
       });
     };
   }, [mutate, kernelClient, kernelAccount, isParallel]);

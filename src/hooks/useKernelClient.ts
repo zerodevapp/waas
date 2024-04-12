@@ -86,7 +86,7 @@ async function getKernelClient({
     account: kernelAccount,
     chain: chain,
     bundlerTransport: http(
-      `${ZERODEV_BUNDLER_URL}/${appId!}?paymasterProvider=PIMLICO`
+      `${ZERODEV_BUNDLER_URL}/${appId!}`
     ),
     entryPoint: entryPoint,
     middleware: !paymaster?.type ? undefined : {      
