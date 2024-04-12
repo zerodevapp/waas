@@ -3,7 +3,7 @@ import { connect, getAccount, getWalletClient } from "@wagmi/core";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { KernelSmartAccount, KernelValidator, createKernelAccount } from "@zerodev/sdk";
 import { walletClientToSmartAccountSigner } from "permissionless";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { type PublicClient,  } from "viem";
 import { useConfig, usePublicClient, type Config, type Connector, type CreateConnectorFn } from "wagmi";
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext";
@@ -57,7 +57,9 @@ async function mutationFn(config: UseCreateKernelClientEOAKey): Promise<CreateKe
   const entryPoint = getEntryPointFromVersion(version);
 
   const { status } = getAccount(wagmiConfig);
-  if (status === "disconnected") {
+
+  const isConnected = 'uid' in connector && connector.uid === wagmiConfig.state.current
+  if (status === "disconnected" && !isConnected) {
     await connect(wagmiConfig, { connector });
   }
   const walletClient = await getWalletClient(wagmiConfig);

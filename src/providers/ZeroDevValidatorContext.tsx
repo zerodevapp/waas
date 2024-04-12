@@ -25,9 +25,9 @@ interface ZeroDevValidatorValue {
   setKernelAccount: (
     kernelAccount: KernelSmartAccount<EntryPoint> | null
   ) => void;
-  kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null;
+  kernelAccountClient: KernelAccountClient<EntryPoint> | null;
   setKernelAccountClient: (
-    kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null
+    kernelAccountClient: KernelAccountClient<EntryPoint> | null
   ) => void;
   entryPoint: EntryPoint | null;
   setEntryPoint: (entryPoint: EntryPoint | null) => void;
@@ -57,7 +57,7 @@ export function ZeroDevValidatorProvider({
   const [kernelAccount, setKernelAccount] =
     useState<KernelSmartAccount<EntryPoint> | null>(null);
   const [kernelAccountClient, setKernelAccountClient] =
-    useState<KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null>(null);
+    useState<KernelAccountClient<EntryPoint> | null>(null);
   const [entryPoint, setEntryPoint] = useState<EntryPoint | null>(null);
 
   const updateValidator = (validator: KernelValidator<EntryPoint> | null) => {
@@ -81,7 +81,7 @@ export function ZeroDevValidatorProvider({
   };
 
   const updateKernelAccountClient = (
-    kernelAccountClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | null
+    kernelAccountClient: KernelAccountClient<EntryPoint> | null
   ) => {
     if (!kernelAccountClient) {
       setKernelAccountClient(null);
