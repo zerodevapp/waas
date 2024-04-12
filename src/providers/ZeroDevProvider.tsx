@@ -1,17 +1,11 @@
 import { ReactNode } from "react";
-import { type Chain } from "viem";
+import { type Chain } from "wagmi/chains";
 import { SessionProvider } from "./SessionContext";
 import { ZeroDevAppProvider } from "./ZeroDevAppContext";
 import { ZeroDevValidatorProvider } from "./ZeroDevValidatorContext";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-export interface ZeroDevWaasProviderProps {
+export interface ZeroDevProviderProps {
   appId: string | null;
   chain: Chain | null;
   children: ReactNode;
@@ -21,7 +15,7 @@ export function ZeroDevProvider({
   children,
   appId,
   chain,
-}: ZeroDevWaasProviderProps) {
+}: ZeroDevProviderProps) {
   const queryClient = new QueryClient()
 
   return (

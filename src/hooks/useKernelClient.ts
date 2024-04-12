@@ -34,6 +34,7 @@ export type KernelClientKey = [
 
 export type GetKernelClientReturnType = {
   address: Address;
+  entryPoint: EntryPoint;
   kernelAccount: KernelSmartAccount<EntryPoint>;
   kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>;
 };
@@ -44,6 +45,7 @@ export type UseKernelClientParameters = {
 
 export type UseKernelClientReturnType = {
   address: Address | undefined;
+  entryPoint: EntryPoint | undefined;
   kernelAccount: KernelSmartAccount<EntryPoint> | undefined;
   kernelClient: KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>> | undefined;
   isConnected: boolean;
@@ -72,6 +74,7 @@ async function getKernelClient({
       kernelClient: kernelAccountClient,
       kernelAccount: kernelAccountClient.account,
       address: kernelAccountClient.account.address,
+      entryPoint: entryPoint!
     };
   }
 
@@ -116,7 +119,7 @@ async function getKernelClient({
       },
     },
   }) as KernelAccountClient<EntryPoint, Transport, Chain, KernelSmartAccount<EntryPoint>>;
-  return { kernelClient, kernelAccount, address: kernelAccount.address };
+  return { kernelClient, kernelAccount, address: kernelAccount.address, entryPoint };
 }
 
 export function useKernelClient(
