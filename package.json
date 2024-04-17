@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@walletconnect/core": "^2.11.3",
     "@walletconnect/encoding": "^1.0.2",
