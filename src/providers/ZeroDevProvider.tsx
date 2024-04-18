@@ -3,6 +3,7 @@ import { type Chain } from "wagmi/chains";
 import { SessionProvider } from "./SessionContext";
 import { ZeroDevAppProvider } from "./ZeroDevAppContext";
 import { ZeroDevValidatorProvider } from "./ZeroDevValidatorContext";
+import { WalletConnectProvider } from "./WalletConnectProvider";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export interface ZeroDevProviderProps {
@@ -23,7 +24,9 @@ export function ZeroDevProvider({
       <ZeroDevAppProvider appId={appId} chain={chain}>
         <ZeroDevValidatorProvider>
           <SessionProvider>
-            {children}
+            <WalletConnectProvider>
+              {children}
+            </WalletConnectProvider>
           </SessionProvider>
         </ZeroDevValidatorProvider>
       </ZeroDevAppProvider>

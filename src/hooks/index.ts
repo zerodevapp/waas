@@ -1,4 +1,7 @@
-export { useWalletConnect } from "./useWalletConnect"
+export {
+  useWalletConnect,
+  type WalletConnectReturnType,
+} from "./useWalletConnect"
 
 export { 
   useCreateBasicSession, 
