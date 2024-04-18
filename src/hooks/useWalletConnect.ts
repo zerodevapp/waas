@@ -6,6 +6,7 @@ import { formatJsonRpcError } from '@walletconnect/jsonrpc-utils'
 import type { SessionTypes } from '@walletconnect/types'
 import WalletConnectWallet from '../walletconnect/WalletConnectWallet'
 import { KernelAccountClient, KernelEIP1193Provider } from "@zerodev/sdk";
+import { EntryPoint } from "permissionless/types";
 import { stripEip155Prefix } from "../walletconnect/constants";
 import { asError, getWrongChainError, getPeerName } from "../walletconnect/utils";
 
@@ -31,7 +32,7 @@ export enum WCLoadingState {
 }
 
 type Props = {
-  kernelClient: KernelAccountClient
+  kernelClient: KernelAccountClient<EntryPoint>
 }
 
 export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
@@ -39,7 +40,7 @@ export function useWalletConnect({ kernelClient }: Props): WalletConnectHook {
   const [sessionProposal, setSessionProposal] = useState<Web3WalletTypes.SessionProposal>()
   const [isLoading, setIsLoading] = useState<WCLoadingState | undefined>()
   const [error, setError] = useState<Error | undefined>()
-  const [kernelProvider, setKernelProvider] = useState<KernelEIP1193Provider>()
+  const [kernelProvider, setKernelProvider] = useState<KernelEIP1193Provider<EntryPoint>>()
   const [sessions, setSessions] = useState<SessionTypes.Struct[]>([])
   const [sessionRequest, setSessionRequest] = useState<Web3WalletTypes.SessionRequest>()
   const chainId = useMemo(() => kernelClient?.chain?.id, [kernelClient])
