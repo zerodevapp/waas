@@ -1807,38 +1807,38 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@zerodev/ecdsa-validator@5.2.1-alpha-0":
-  version "5.2.1-alpha-0"
-  resolved "https://registry.yarnpkg.com/@zerodev/ecdsa-validator/-/ecdsa-validator-5.2.1-alpha-0.tgz#d3cf44732a7a49c65729e380f83ad3b0c9e8f939"
-  integrity sha512-NWvxqhA3jyNXtNYl6stGZ6MsBuU/JSJKs9RAQHVqFRQAfCe8gZzRzlewsFuTYQ84oSFRBgS+/nQlnOURAM+rxw==
+"@zerodev/ecdsa-validator@^5.2.3":
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/@zerodev/ecdsa-validator/-/ecdsa-validator-5.2.3.tgz#19f55620c2254df53677662ce0715172675f28ed"
+  integrity sha512-zeJjYhOW5EWK6XnctPt3iVnrqmrHfb81p/fJKaY4yQnL2ZYPrH37ZgtY1z5COETPCDTm65+jPfc1Zn/dziyAXQ==
 
-"@zerodev/passkey-validator@5.2.1-alpha.0":
-  version "5.2.1-alpha.0"
-  resolved "https://registry.yarnpkg.com/@zerodev/passkey-validator/-/passkey-validator-5.2.1-alpha.0.tgz#cd158639c98aa53dfbe99b4eafdf5096324ed41b"
-  integrity sha512-Zh/L5CFHkMJYX96Vmxz0cG0NupAE5mztXZ8jauDLk+ebt7tN06ZZ7l3A9QSZTsa5kCwUYO7MfZexB0G2HdI05A==
+"@zerodev/passkey-validator@^5.2.3":
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/@zerodev/passkey-validator/-/passkey-validator-5.2.3.tgz#e65376c43c7eec14977fb7b9207eecfc124fefc4"
+  integrity sha512-tw5PqBE2G5MlK8rQaQM+1fJlLaAQmY1uyIb5eAd+H5hLmurwmqPgjx3D7ygaiFHCJeUbC1yuM7ZzmkCSgbgMhQ==
   dependencies:
     "@noble/curves" "^1.3.0"
     "@simplewebauthn/browser" "^8.3.4"
 
-"@zerodev/permissions@^5.2.1-alpha.4":
-  version "5.2.1-alpha.4"
-  resolved "https://registry.yarnpkg.com/@zerodev/permissions/-/permissions-5.2.1-alpha.4.tgz#fe762498fd5d02888ccabb80c4f52c83350fbebc"
-  integrity sha512-MCfx8Y7/VUx1F4+BynZcn8bstJ96rwjU8E6MR5bbwB/dsCyxkl+CwGuOZpfsOhVzH+59/+0l+2GbysQHNdKD6A==
+"@zerodev/permissions@^5.2.2":
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@zerodev/permissions/-/permissions-5.2.2.tgz#ad37c70d9e50ea31b080e69b9b40975b41f1e346"
+  integrity sha512-CyMfvuY0CLDCnaOlEiZfM1T9XfTTbaZUcunnzyzMQsjAMBUQK9B/wrLSQ9gYoJhLgra8zkbnCutdWNn4XXjI3w==
   dependencies:
     "@simplewebauthn/browser" "^9.0.1"
     merkletreejs "^0.3.11"
 
-"@zerodev/sdk@5.2.1-alpha-0":
-  version "5.2.1-alpha-0"
-  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-5.2.1-alpha-0.tgz#0f1d3c651776778c0fe3915b713def09a8738610"
-  integrity sha512-d8FLmtm0rr4cEHJTfFJ8FUOeFjTWy45jQSpm4kxEnp+igEZd/00Jlcg3ow/nKdoCFsRakTx+5NAw11Li6kkCAQ==
+"@zerodev/sdk@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/@zerodev/sdk/-/sdk-5.2.4.tgz#3775e7a49bd5641b04d950c9a7da0b6946b14271"
+  integrity sha512-qfMN9sKchVymlRgiAnQkN1RgeYH8YkfE3rSfJ6fMHsATNN6KS1eOf7KgS+ibxjEwN2vkKbBqjyYcVy4gRBA4kg==
   dependencies:
     semver "^7.6.0"
 
-"@zerodev/session-key@5.2.1-alpha.0":
-  version "5.2.1-alpha.0"
-  resolved "https://registry.yarnpkg.com/@zerodev/session-key/-/session-key-5.2.1-alpha.0.tgz#e8421168e61d70ad34621586d1963889662df845"
-  integrity sha512-f2wp1aDRrUCP7cxPTiNZqpy+Fwpf0R3cstF2nmIq0pbfZ/EOCYHcPPgKaDKIwqWijbodIlWXngP39gCdLx1wPA==
+"@zerodev/session-key@^5.2.2":
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@zerodev/session-key/-/session-key-5.2.2.tgz#170f4f7d1163a661acd32d6a179f0d6b45c376a6"
+  integrity sha512-jHUjoRdzdP6DH8qIsSICLDMD+FgvBwZFQQ1ipgG33oK8696pFI4qjphMBQGA3kEqVzL0syKiO7eIUV8FlwD1mQ==
   dependencies:
     merkletreejs "^0.3.11"
 
@@ -3534,10 +3534,10 @@ pathe@^1.1.0, pathe@^1.1.1, pathe@^1.1.2:
   resolved "https://registry.yarnpkg.com/pathe/-/pathe-1.1.2.tgz#6c4cb47a945692e48a1ddd6e4094d170516437ec"
   integrity sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==
 
-permissionless@^0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/permissionless/-/permissionless-0.1.12.tgz#4cc80f90dd95353f53e1ba4f08bd21a5c5f9e1da"
-  integrity sha512-lB12zgMbQDdBlx7GZAdrZQUWBtDxT9D13aqLzwMe7o5SGUw62IR2rCnYVoU+iCFYnotZ6BdI3Q1YusktXsSebw==
+permissionless@^0.1.18:
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/permissionless/-/permissionless-0.1.18.tgz#cefed0de1ad3cb3a36dd4512b6d965e08f56c19c"
+  integrity sha512-A3OBQfA/wj+Qj5zXyMEoKwuwd+GgImG9EFYYtLHPooDJ26CL44HJpY27owH5MPsUS6IX+1E9N6mF4J/frQhXoQ==
 
 picocolors@^1.0.0:
   version "1.0.0"
@@ -4374,20 +4374,6 @@ valtio@1.11.2:
     proxy-compare "2.5.1"
     use-sync-external-store "1.2.0"
 
-viem@2.9.4:
-  version "2.9.4"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.9.4.tgz#0431a016366c0c920fb42c7e30eaea044ff7beac"
-  integrity sha512-j239PwRYc9WU7GOogfJ5Iu/5jwYaidpR85gLxKCwQmuXkNILKiRHntEM15EAtC9bcgaa9oklYwQ+/MlLU593/A==
-  dependencies:
-    "@adraffy/ens-normalize" "1.10.0"
-    "@noble/curves" "1.2.0"
-    "@noble/hashes" "1.3.2"
-    "@scure/bip32" "1.3.2"
-    "@scure/bip39" "1.2.1"
-    abitype "1.0.0"
-    isows "1.0.3"
-    ws "8.13.0"
-
 viem@^1.0.0, viem@^1.1.4:
   version "1.21.4"
   resolved "https://registry.yarnpkg.com/viem/-/viem-1.21.4.tgz#883760e9222540a5a7e0339809202b45fe6a842d"
@@ -4399,6 +4385,20 @@ viem@^1.0.0, viem@^1.1.4:
     "@scure/bip32" "1.3.2"
     "@scure/bip39" "1.2.1"
     abitype "0.9.8"
+    isows "1.0.3"
+    ws "8.13.0"
+
+viem@^2.9.20:
+  version "2.9.20"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.9.20.tgz#71c6a45d22a8150072adee3dcb7a93fff5347d16"
+  integrity sha512-PHb1MrBHMrSZ8Ayuk3Y/6wUTcMbzlACQaM6AJBSv9kRKX3xYSZ/kehi+gvS0swQJeAlTQ4eZM7jsHQJNAOarmg==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@scure/bip32" "1.3.2"
+    "@scure/bip39" "1.2.1"
+    abitype "1.0.0"
     isows "1.0.3"
     ws "8.13.0"
 
