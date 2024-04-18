@@ -1,6 +1,6 @@
 {
   "name": "@zerodev/waas",
-  "version": "0.0.8-alpha.8",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
     "dev": "tsup --watch"
   },
   "keywords": [],
-  "author": "",
+  "author": "ZeroDev",
   "license": "MIT",
   "dependencies": {
     "@tanstack/react-query": "^5.28.14",
