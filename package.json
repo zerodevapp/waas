@@ -25,8 +25,8 @@
     "lodash": "^4.17.21",
     "permissionless": "^0.1.18",
     "react": "^18.2.0",
-    "viem": "^2.9.20",
-    "wagmi": "^2.5.19"
+    "viem": "^2.9.21",
+    "wagmi": "^2.5.20"
   },
   "devDependencies": {
     "@swc/core": "^1.4.11",
