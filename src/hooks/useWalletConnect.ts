@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import type { Web3WalletTypes } from '@walletconnect/web3wallet'
 import type { SessionTypes } from '@walletconnect/types'
 import { WCLoadingState, WalletConnectContext } from "../providers/WalletConnectContext";
@@ -34,9 +34,11 @@ export function useWalletConnect(): WalletConnectReturnType {
     disconnect,
   } = useContext(WalletConnectContext)
 
-  if (!hasBeenInitialized) {
-    setHasBeenInitialized(true)
-  }
+  useEffect(() => {
+    if (!hasBeenInitialized) {
+      setHasBeenInitialized(true);
+    }
+  }, [hasBeenInitialized]);
 
   return {
     connect,
