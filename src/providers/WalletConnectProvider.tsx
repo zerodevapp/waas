@@ -28,14 +28,13 @@ export function WalletConnectProvider({ children }: { children: React.ReactNode 
   const address = useMemo(() => kernelClient?.account?.address, [kernelClient])
 
   useEffect(() => {
+    if (!hasBeenInitialized) return
     const getWallet = async () => {
       const wcWallet = new WalletConnectWallet()
       await wcWallet.init()
       setWcWallet(wcWallet)
     }
-    if (hasBeenInitialized) {
-      getWallet()
-    }
+    getWallet()
   }, [hasBeenInitialized])
 
   useEffect(() => {
@@ -74,6 +73,7 @@ export function WalletConnectProvider({ children }: { children: React.ReactNode 
 
   // Initial sessions
   useEffect(() => {
+    if (!hasBeenInitialized) return
     updateSessions()
   }, [hasBeenInitialized])
 
