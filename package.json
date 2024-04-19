@@ -31,13 +31,15 @@
     "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.73",
     "tsup": "^8.0.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "viem": "^2.9.23",
+    "wagmi": "^2.5.20"
   },
   "peerDependencies": {
+    "@wagmi/core": ">=2.5.0",
     "react": ">=18.2.0",
     "typescript": ">=5.4.3",
-    "wagmi": ">=2.5.0",
-    "@wagmi/core": ">=2.5.0",
-    "viem": ">=2.5.0"
+    "viem": ">=2.5.0",
+    "wagmi": ">=2.5.0"
   }
 }

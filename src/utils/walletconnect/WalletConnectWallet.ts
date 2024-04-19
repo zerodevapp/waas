@@ -3,9 +3,8 @@ import { Web3Wallet } from '@walletconnect/web3wallet'
 import type Web3WalletType from '@walletconnect/web3wallet'
 import type { Web3WalletTypes } from '@walletconnect/web3wallet'
 import { type JsonRpcResponse } from '@walletconnect/jsonrpc-utils'
-import type { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes, CoreTypes } from '@walletconnect/types'
 import { buildApprovedNamespaces, getSdkError } from '@walletconnect/utils'
-import { ZERO_DEV_WALLET_METADATA, WC_PROJECT_ID } from './constants'
 import { EIP155, KERNEL_COMPATIBLE_EVENTS, KERNEL_COMPATIBLE_METHODS } from './constants'
 import { getEip155ChainId, stripEip155Prefix } from './utils'
 import uniq from 'lodash/uniq'
@@ -16,16 +15,22 @@ const SESSION_REJECT_EVENT = 'session_reject' as Web3WalletTypes.Event // Workar
 class WalletConnectWallet {
   private web3Wallet: Web3WalletType | null = null
 
-  public async init() {
+  public async init({
+    projectId,
+    metadata,
+  }: {
+    projectId?: string
+    metadata?: CoreTypes.Metadata
+  }) {
     if (this.web3Wallet) return;
 
     const core = new Core({
-      projectId: WC_PROJECT_ID
+      projectId,
     })
 
     const web3wallet = await Web3Wallet.init({
       core,
-      metadata: ZERO_DEV_WALLET_METADATA
+      metadata,
     })
 
     this.web3Wallet = web3wallet;

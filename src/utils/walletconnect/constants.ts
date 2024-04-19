@@ -1,12 +1,3 @@
-export const WC_PROJECT_ID = 'bb1805e49e8bd78a9c75aefed3649d68';
-
-export const ZERO_DEV_WALLET_METADATA = {
-  name: 'ZeroDev Wallet',
-  url: 'https://zerodev.app',
-  description: 'Smart contract wallet for Ethereum',
-  icons: ['https://pbs.twimg.com/profile_images/1582474288719880195/DavMgC0t_400x400.jpg'], // TODO: add icon
-}
-
 export const EIP155 = 'eip155' as const
 
 export const KERNEL_COMPATIBLE_METHODS = [

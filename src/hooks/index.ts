@@ -1,6 +1,7 @@
 export {
   useWalletConnect,
-  type WalletConnectReturnType,
+  type UseWalletConnectParameters,
+  type UseWalletConnectReturnType,
 } from "./useWalletConnect"
 
 export { 

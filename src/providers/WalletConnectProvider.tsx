@@ -10,11 +10,11 @@ import { useKernelClient } from "../hooks/useKernelClient";
 import WalletConnectWallet from '../utils/walletconnect/WalletConnectWallet'
 import { stripEip155Prefix } from "../utils/walletconnect/constants";
 import { asError, getWrongChainError, getPeerName } from "../utils/walletconnect/utils";
-import { WCLoadingState, WalletConnectContext } from './WalletConnectContext';
+import { WCLoadingState, WalletConnectContext, WalletConnectParams } from './WalletConnectContext';
 
 export function WalletConnectProvider({ children }: { children: React.ReactNode }) {
   // Only initialize WalletConnect if the useWalletConnect() hook is called
-  const [hasBeenInitialized, setHasBeenInitialized] = useState(false);
+  const [walletConnectParams, setWalletConnectParams] = useState<WalletConnectParams | undefined>()
 
   const [wcWallet, setWcWallet] = useState<WalletConnectWallet | undefined>()
   const [error, setError] = useState<Error | undefined>()
@@ -26,68 +26,69 @@ export function WalletConnectProvider({ children }: { children: React.ReactNode 
   const [sessionRequest, setSessionRequest] = useState<Web3WalletTypes.SessionRequest>()
   const chainId = useMemo(() => kernelClient?.chain?.id, [kernelClient])
   const address = useMemo(() => kernelClient?.account?.address, [kernelClient])
+  const isInitialized = useMemo(() => !!walletConnectParams?.projectId, [walletConnectParams])
 
   useEffect(() => {
-    if (!hasBeenInitialized) return
+    if (!isInitialized) return
     const getWallet = async () => {
       const wcWallet = new WalletConnectWallet()
-      await wcWallet.init()
+      await wcWallet.init(walletConnectParams!)
       setWcWallet(wcWallet)
     }
     getWallet()
-  }, [hasBeenInitialized])
+  }, [walletConnectParams, isInitialized])
 
   useEffect(() => {
-    if (!kernelClient || !hasBeenInitialized) return
+    if (!kernelClient || !isInitialized) return
     const provider = new KernelEIP1193Provider(kernelClient)
     setKernelProvider(provider)
-  }, [kernelClient, chainId, hasBeenInitialized])
+  }, [kernelClient, chainId, isInitialized])
 
   // Subscribe to requests
   useEffect(() => {
-    if (!wcWallet || !kernelProvider || !chainId || !hasBeenInitialized) return
+    if (!wcWallet || !kernelProvider || !chainId || !isInitialized) return
 
     return wcWallet.onRequest(async (event) => {
       setSessionRequest(event);
     })
-  }, [wcWallet, chainId, kernelProvider, hasBeenInitialized])
+  }, [wcWallet, chainId, kernelProvider, isInitialized])
 
   // Update chainId/address
   useEffect(() => {
-    if (!wcWallet || !chainId || !address || !hasBeenInitialized) return
+    if (!wcWallet || !chainId || !address || !isInitialized) return
 
     wcWallet.updateSessions(chainId.toString(), address).catch((e: Error) => {
       setError(asError(e))
     })
-  }, [wcWallet, chainId, address, hasBeenInitialized])
+  }, [wcWallet, chainId, address, isInitialized])
 
   // Subscribe to session proposals
   useEffect(() => {
-    if (!wcWallet || !hasBeenInitialized) return
+    if (!wcWallet || !isInitialized) return
     return wcWallet.onSessionPropose((proposalData) => {
       setError(undefined)
 
       setSessionProposal(proposalData)
     })
-  }, [wcWallet, chainId, hasBeenInitialized])
+  }, [wcWallet, isInitialized])
 
   // Initial sessions
   useEffect(() => {
-    if (!hasBeenInitialized) return
+    if (!isInitialized) return
     updateSessions()
-  }, [hasBeenInitialized])
+  }, [isInitialized])
 
   // On session add
   useEffect(() => {
-    if (!wcWallet || !hasBeenInitialized) return
+    if (!wcWallet || !isInitialized) return
     return wcWallet.onSessionAdd(updateSessions)
-  }, [wcWallet, hasBeenInitialized])
+  }, [wcWallet, isInitialized])
 
   // On session delete
   useEffect(() => {
-    if (!wcWallet || !hasBeenInitialized) return
+    if (!wcWallet || !isInitialized) return
     return wcWallet.onSessionDelete(updateSessions)
-  }, [wcWallet, hasBeenInitialized])
+  }, [wcWallet, isInitialized])
   
 
   const handleKernelRequest = useCallback(
@@ -270,8 +271,8 @@ export function WalletConnectProvider({ children }: { children: React.ReactNode 
   
   return (
     <WalletConnectContext.Provider value={{
-      hasBeenInitialized,
-      setHasBeenInitialized,
+      walletConnectParams,
+      setWalletConnectParams,
       error,
       isLoading,
       sessions,

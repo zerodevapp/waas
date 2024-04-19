@@ -1,9 +1,14 @@
 import { useContext, useEffect } from "react";
 import type { Web3WalletTypes } from '@walletconnect/web3wallet'
-import type { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes, CoreTypes } from '@walletconnect/types'
 import { WCLoadingState, WalletConnectContext } from "../providers/WalletConnectContext";
 
-export type WalletConnectReturnType = {
+export type UseWalletConnectParameters = {
+  projectId: string
+  metadata: CoreTypes.Metadata
+}
+
+export type UseWalletConnectReturnType = {
   connect: (uri: string) => void
   approveSessionProposal: (proposalData?: Web3WalletTypes.SessionProposal) => void
   rejectSessionProposal: () => void
@@ -17,10 +22,20 @@ export type WalletConnectReturnType = {
   error: Error | undefined
 }
 
-export function useWalletConnect(): WalletConnectReturnType {
+export function useWalletConnect(
+  {
+    projectId = '',
+    metadata = {
+      name: '',
+      description: '',
+      url: '',
+      icons: [],
+    },
+  }: UseWalletConnectParameters
+): UseWalletConnectReturnType {
   const {
-    hasBeenInitialized,
-    setHasBeenInitialized,
+    walletConnectParams,
+    setWalletConnectParams,
     sessions,
     sessionProposal,
     sessionRequest,
@@ -35,10 +50,11 @@ export function useWalletConnect(): WalletConnectReturnType {
   } = useContext(WalletConnectContext)
 
   useEffect(() => {
-    if (!hasBeenInitialized) {
-      setHasBeenInitialized(true);
+    if (!walletConnectParams?.projectId && projectId
+      || !walletConnectParams?.metadata?.name && metadata.name) {
+      setWalletConnectParams({ projectId, metadata });
     }
-  }, [hasBeenInitialized]);
+  }, [projectId, metadata]);
 
   return {
     connect,

@@ -1,6 +1,6 @@
 import { createContext, type Dispatch, type SetStateAction} from 'react'
 import type { Web3WalletTypes } from '@walletconnect/web3wallet'
-import type { SessionTypes } from '@walletconnect/types'
+import type { SessionTypes, CoreTypes } from '@walletconnect/types'
 
 export enum WCLoadingState {
   APPROVE = 'Approve',
@@ -9,9 +9,14 @@ export enum WCLoadingState {
   DISCONNECT = 'Disconnect',
 }
 
+export type WalletConnectParams = {
+  projectId?: string
+  metadata?: CoreTypes.Metadata
+}
+
 type WalletConnectContextType = {
-  hasBeenInitialized: boolean
-  setHasBeenInitialized: Dispatch<SetStateAction<boolean>>
+  walletConnectParams: WalletConnectParams | undefined
+  setWalletConnectParams: Dispatch<SetStateAction<WalletConnectParams | undefined>>
   error: Error | undefined
   isLoading: WCLoadingState | undefined
   sessions: SessionTypes.Struct[]
@@ -26,8 +31,8 @@ type WalletConnectContextType = {
 }
 
 export const WalletConnectContext = createContext<WalletConnectContextType>({
-  hasBeenInitialized: false,
-  setHasBeenInitialized: () => {},
+  walletConnectParams: undefined,
+  setWalletConnectParams: () => {},
   error: undefined,
   isLoading: undefined,
   sessions: [],
