@@ -29,14 +29,17 @@ export function WalletConnectProvider({ children }: { children: React.ReactNode 
   const isInitialized = useMemo(() => !!walletConnectParams?.projectId, [walletConnectParams])
 
   useEffect(() => {
-    if (!isInitialized) return
+    if (!walletConnectParams?.metadata || !walletConnectParams?.projectId) return
     const getWallet = async () => {
       const wcWallet = new WalletConnectWallet()
-      await wcWallet.init(walletConnectParams!)
+      await wcWallet.init({
+        projectId: walletConnectParams.projectId!,
+        metadata: walletConnectParams.metadata!,
+      })
       setWcWallet(wcWallet)
     }
     getWallet()
-  }, [walletConnectParams, isInitialized])
+  }, [walletConnectParams])
 
   useEffect(() => {
     if (!kernelClient || !isInitialized) return

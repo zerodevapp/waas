@@ -19,8 +19,8 @@ class WalletConnectWallet {
     projectId,
     metadata,
   }: {
-    projectId?: string
-    metadata?: CoreTypes.Metadata
+    projectId: string
+    metadata: CoreTypes.Metadata
   }) {
     if (this.web3Wallet) return;
 
