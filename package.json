@@ -34,5 +34,11 @@
     "@types/react": "^18.2.73",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "typescript": ">=5.4.3", 
+    "wagmi": ">=2.5.0",
+    "@wagmi/core": ">=2.5.0"
   }
 }
