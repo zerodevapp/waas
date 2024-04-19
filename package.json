@@ -1,6 +1,6 @@
 {
   "name": "@zerodev/waas",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,9 +24,7 @@
     "events": "^3.3.0",
     "lodash": "^4.17.21",
     "permissionless": "^0.1.18",
-    "react": "^18.2.0",
-    "viem": "^2.9.21",
-    "wagmi": "^2.5.20"
+    "react": "^18.2.0"
   },
   "devDependencies": {
     "@swc/core": "^1.4.11",
@@ -34,5 +32,11 @@
     "@types/react": "^18.2.73",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "typescript": ">=5.4.3",
+    "wagmi": ">=2.5.0",
+    "@wagmi/core": ">=2.5.0"
   }
 }
