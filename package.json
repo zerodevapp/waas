@@ -1,6 +1,6 @@
 {
   "name": "@zerodev/waas",
-  "version": "0.1.1",
+  "version": "0.1.2-alpha.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -37,7 +37,7 @@
   },
   "peerDependencies": {
     "react": ">=18.2.0",
-    "typescript": ">=5.4.3", 
+    "typescript": ">=5.4.3",
     "wagmi": ">=2.5.0",
     "@wagmi/core": ">=2.5.0"
   }
