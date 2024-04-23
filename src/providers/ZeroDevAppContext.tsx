@@ -1,41 +1,41 @@
-import { ReactNode, createContext, useContext } from "react";
-import { type Chain } from "viem";
+import { type ReactNode, createContext, useContext } from "react"
+import type { Chain } from "viem"
 
 interface ZeroDevAppContextValue {
-  appId: string | null;
-  chain: Chain | null;
+    appId: string | null
+    chain: Chain | null
 }
 
 export const ZeroDevAppContext = createContext<ZeroDevAppContextValue>({
-  appId: null,
-  chain: null,
-});
+    appId: null,
+    chain: null
+})
 
 interface ZeroDevAppProviderProps {
-  children: ReactNode;
-  appId: string | null;
-  chain: Chain | null;
+    children: ReactNode
+    appId: string | null
+    chain: Chain | null
 }
 
 export function ZeroDevAppProvider({
-  children,
-  appId,
-  chain,
+    children,
+    appId,
+    chain
 }: ZeroDevAppProviderProps) {
-  return (
-    <ZeroDevAppContext.Provider
-      value={{
-        appId,
-        chain,
-      }}
-    >
-      {children}
-    </ZeroDevAppContext.Provider>
-  );
+    return (
+        <ZeroDevAppContext.Provider
+            value={{
+                appId,
+                chain
+            }}
+        >
+            {children}
+        </ZeroDevAppContext.Provider>
+    )
 }
 
 export function useZeroDevConfig() {
-  const { appId, chain } = useContext(ZeroDevAppContext);
+    const { appId, chain } = useContext(ZeroDevAppContext)
 
-  return { appId, chain };
+    return { appId, chain }
 }

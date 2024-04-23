@@ -1,1 +1,1 @@
-export type KernelVersionType = "v2" | "v3";
+export type KernelVersionType = "v2" | "v3"
