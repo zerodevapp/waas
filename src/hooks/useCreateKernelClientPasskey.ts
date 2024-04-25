@@ -9,9 +9,8 @@ import {
     createKernelAccount
 } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import type { PublicClient } from "viem"
-import { usePublicClient } from "wagmi"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type { KernelVersionType } from "../types"
@@ -118,8 +117,7 @@ export function useCreateKernelClientPasskey({
         setEntryPoint,
         setKernelAccountClient
     } = useSetKernelAccount()
-    const { appId } = useZeroDevConfig()
-    const client = usePublicClient()
+    const { appId, client } = useZeroDevConfig()
 
     const { data, mutate, ...result } = useMutation({
         mutationKey: mutationKey({

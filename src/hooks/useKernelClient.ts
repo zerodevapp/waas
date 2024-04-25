@@ -19,7 +19,6 @@ import {
     type PublicClient,
     type Transport
 } from "viem"
-import { usePublicClient } from "wagmi"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type {
@@ -169,10 +168,9 @@ async function getKernelClient({
 export function useKernelClient(
     parameters: UseKernelClientParameters = {}
 ): UseKernelClientReturnType {
-    const { appId, chain } = useZeroDevConfig()
+    const { appId, chain, client } = useZeroDevConfig()
     const { kernelAccount, entryPoint, kernelAccountClient } =
         useKernelAccount()
-    const client = usePublicClient()
 
     const { data, ...result } = useQuery({
         queryKey: [

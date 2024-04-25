@@ -14,9 +14,9 @@ import {
     type Config,
     type Connector,
     type CreateConnectorFn,
-    useConfig,
-    usePublicClient
+    useConfig
 } from "wagmi"
+import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type { KernelVersionType } from "../types"
 import { getEntryPointFromVersion } from "../utils/entryPoint"
@@ -108,7 +108,7 @@ export function useCreateKernelClientEOA({
         setKernelAccountClient
     } = useSetKernelAccount()
     const config = useConfig()
-    const client = usePublicClient()
+    const { client } = useZeroDevConfig()
 
     const { data, mutate, ...result } = useMutation({
         mutationKey: mutationKey({

@@ -6,8 +6,8 @@ import type { EntryPoint } from "permissionless/types"
 import { useMemo } from "react"
 import type { Abi, PublicClient } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
-import { usePublicClient } from "wagmi"
 import { useUpdateSession } from "../providers/SessionContext"
+import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import { createSessionKernelAccount } from "../utils/sessions/createSessionKernelAccount"
 import { createSessionKey } from "../utils/sessions/manageSession"
@@ -19,7 +19,7 @@ export type CreateBasicSessionVariables = {
 export type UseCreateBasicSessionKey = {
     validator: KernelValidator<EntryPoint> | null
     permissions: Permission<Abi>[] | undefined
-    client: PublicClient | undefined
+    client: PublicClient | undefined | null
     entryPoint: EntryPoint | null
 }
 
@@ -90,7 +90,7 @@ async function mutationFn(
 
 export function useCreateBasicSession(): UseCreateBasicSessionReturnType {
     const { validator, entryPoint } = useKernelAccount()
-    const client = usePublicClient()
+    const { client } = useZeroDevConfig()
     const { updateSession } = useUpdateSession()
 
     const { mutate, ...result } = useMutation({

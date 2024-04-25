@@ -15,7 +15,6 @@ import {
 import type { EntryPoint } from "permissionless/types"
 import { http, type Chain, type PublicClient } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
-import { usePublicClient } from "wagmi"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type {
@@ -162,8 +161,7 @@ async function getSessionKernelClient({
 export function useSessionKernelClient(
     parameters: UseSessionKernelClientParameters = {}
 ): UseSessionKernelClientReturnType {
-    const { appId, chain } = useZeroDevConfig()
-    const client = usePublicClient()
+    const { appId, chain, client } = useZeroDevConfig()
     const { validator, kernelAccount, entryPoint } = useKernelAccount()
     const session = useSessions()
     const kernelAddress = kernelAccount?.address

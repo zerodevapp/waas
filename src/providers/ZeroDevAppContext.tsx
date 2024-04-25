@@ -1,14 +1,17 @@
 import { type ReactNode, createContext, useContext } from "react"
-import type { Chain } from "viem"
+import { http, type Chain, type PublicClient, createPublicClient } from "viem"
+import { ZERODEV_BUNDLER_URL } from "../utils"
 
 interface ZeroDevAppContextValue {
     appId: string | null
     chain: Chain | null
+    client: PublicClient | null
 }
 
 export const ZeroDevAppContext = createContext<ZeroDevAppContextValue>({
     appId: null,
-    chain: null
+    chain: null,
+    client: null
 })
 
 interface ZeroDevAppProviderProps {
@@ -22,11 +25,18 @@ export function ZeroDevAppProvider({
     appId,
     chain
 }: ZeroDevAppProviderProps) {
+    const client =
+        chain &&
+        createPublicClient({
+            chain: chain,
+            transport: http(`${ZERODEV_BUNDLER_URL}/${appId}`)
+        })
     return (
         <ZeroDevAppContext.Provider
             value={{
                 appId,
-                chain
+                chain,
+                client
             }}
         >
             {children}
@@ -35,7 +45,7 @@ export function ZeroDevAppProvider({
 }
 
 export function useZeroDevConfig() {
-    const { appId, chain } = useContext(ZeroDevAppContext)
+    const { appId, chain, client } = useContext(ZeroDevAppContext)
 
-    return { appId, chain }
+    return { appId, chain, client }
 }
