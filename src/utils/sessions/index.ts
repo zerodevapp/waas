@@ -1,17 +1,15 @@
-export {
-  createSessionKernelAccount
-} from "./createSessionKernelAccount";
+export { createSessionKernelAccount } from "./createSessionKernelAccount"
 
 export {
-  serializePolicy,
-  desirializePolicy
+    serializePolicy,
+    desirializePolicy
 } from "./encodeSessionPolicy"
 
-export { getSessionKernelAccount } from "./getSessionKernelAccount";
+export { getSessionKernelAccount } from "./getSessionKernelAccount"
 
 export {
-  createSessionKey,
-  createSession,
-  getAllSession,
-  getSession
+    createSessionKey,
+    createSession,
+    getAllSession,
+    getSession
 } from "./manageSession"

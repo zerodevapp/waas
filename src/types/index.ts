@@ -1,15 +1,17 @@
-export type { KernelVersionType } from "./kernel";
+export type { KernelVersionType } from "./kernel"
 
 export {
-  type CreateSessionKernelAccountType,
-  type EncodedPolicy,  
-  type EncodedSessionType,
-  type SessionInfoType,
-  type SessionType
-} from "./session";
+    type CreateSessionKernelAccountType,
+    type EncodedPolicy,
+    type EncodedSessionType,
+    type SessionInfoType,
+    type SessionType
+} from "./session"
 
 export {
-  type PaymasterERC20,
-  type PaymasterSPONSOR,
-  type PaymasterType,
-} from "./paymaster";
+    type PaymasterERC20,
+    type PaymasterSPONSOR,
+    type PaymasterType,
+    type GasTokenChainIdType,
+    type GasTokenType
+} from "./paymaster"

@@ -1,45 +1,52 @@
 {
-  "name": "@zerodev/waas",
-  "version": "0.1.4",
-  "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
-  },
-  "keywords": [],
-  "author": "ZeroDev",
-  "license": "MIT",
-  "dependencies": {
-    "@tanstack/react-query": "^5.28.14",
-    "@walletconnect/core": "^2.11.3",
-    "@walletconnect/encoding": "^1.0.2",
-    "@walletconnect/web3wallet": "^1.10.3",
-    "@zerodev/ecdsa-validator": "^5.2.3",
-    "@zerodev/passkey-validator": "^5.2.3",
-    "@zerodev/permissions": "^5.2.2",
-    "@zerodev/sdk": "^5.2.4",
-    "@zerodev/session-key": "^5.2.2",
-    "events": "^3.3.0",
-    "lodash": "^4.17.21",
-    "permissionless": "^0.1.18",
-    "react": "^18.2.0"
-  },
-  "devDependencies": {
-    "@swc/core": "^1.4.11",
-    "@types/lodash": "^4.17.0",
-    "@types/react": "^18.2.73",
-    "tsup": "^8.0.2",
-    "typescript": "^5.4.3",
-    "viem": "^2.9.23",
-    "wagmi": "^2.5.20"
-  },
-  "peerDependencies": {
-    "@wagmi/core": ">=2.5.0",
-    "react": ">=18.2.0",
-    "typescript": ">=5.4.3",
-    "viem": ">=2.5.0",
-    "wagmi": ">=2.5.0"
-  }
+    "name": "@zerodev/waas",
+    "version": "0.1.5-alpha.0",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "format": "biome format . --write",
+        "lint": "biome check .",
+        "lint:fix": "bun run lint --apply"
+    },
+    "keywords": [],
+    "author": "ZeroDev",
+    "license": "MIT",
+    "dependencies": {
+        "@walletconnect/core": "^2.11.3",
+        "@walletconnect/encoding": "^1.0.2",
+        "@walletconnect/web3wallet": "^1.10.3",
+        "@zerodev/ecdsa-validator": "^5.2.3",
+        "@zerodev/passkey-validator": "^5.2.3",
+        "@zerodev/permissions": "^5.2.2",
+        "@zerodev/sdk": "^5.2.4",
+        "@zerodev/session-key": "^5.2.2",
+        "events": "^3.3.0",
+        "lodash": "^4.17.21"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.7.1",
+        "@swc/core": "^1.4.11",
+        "@tanstack/react-query": "^5.28.14",
+        "@types/lodash": "^4.17.0",
+        "@types/react": "^18.2.73",
+        "react": ">=18.2.0",
+        "react-dom": ">=18",
+        "simple-git-hooks": "^2.11.1",
+        "tsup": "^8.0.2",
+        "typescript": "^5.4.3"
+    },
+    "peerDependencies": {
+        "@tanstack/react-query": "^5.28.14",
+        "@wagmi/core": ">=2.5.0",
+        "react": ">=18.2.0",
+        "typescript": ">=5.4.3",
+        "viem": ">=2.5.0",
+        "wagmi": ">=2.5.0"
+    },
+    "simple-git-hooks": {
+        "pre-commit": "bun run format && bun run lint:fix"
+    }
 }
