@@ -1,6 +1,6 @@
 {
     "name": "@zerodev/waas",
-    "version": "0.1.5-alpha.0",
+    "version": "0.1.5-test.1",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -23,7 +23,7 @@
         "@zerodev/permissions": "^5.2.2",
         "@zerodev/sdk": "^5.2.4",
         "@zerodev/session-key": "^5.2.2",
-        "@zerodev/social-validator": "../../v5/sdk/plugins/social",
+        "@zerodev/social-validator": "5.0.0",
         "events": "^3.3.0",
         "lodash": "^4.17.21"
     },
