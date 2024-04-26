@@ -21,9 +21,7 @@ export {
 export {
     useCreateKernelClientEOA,
     type UseCreateKernelClientEOAParameters,
-    type UseCreateKernelClientEOAReturnType,
-    type CreateKernelClientEOAVariables,
-    type CreateKernelClientEOAReturnType
+    type UseCreateKernelClientEOAReturnType
 } from "./useCreateKernelClientEOA"
 
 export {
