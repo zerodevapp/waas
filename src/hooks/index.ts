@@ -75,14 +75,12 @@ export {
 
 export {
     useSetKernelClient,
-    type UseSetKernelClientReturnType,
-    type SetKernelClientReturnType
+    type UseSetKernelClientReturnType
 } from "./useSetKernelClient"
 
 export {
     useDisconnectKernelClient,
-    type UseDisconnectKernelClientReturnType,
-    type DisconnectKernelClientReturnType
+    type UseDisconnectKernelClientReturnType
 } from "./useDisconnectKernelClient"
 
 export {

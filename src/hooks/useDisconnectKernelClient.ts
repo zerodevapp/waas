@@ -1,141 +1,63 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
-import type {
-    KernelAccountClient,
-    KernelSmartAccount,
-    KernelValidator
-} from "@zerodev/sdk"
-import type { EntryPoint } from "permissionless/types"
-import { useMemo } from "react"
-import type { Chain, Transport } from "viem"
+import { useMutation } from "@tanstack/react-query"
+import type { Evaluate } from "@wagmi/core/internal"
+import type { DisconnectKernelClientErrorType } from "../actions/disconnectKernelClient"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
+import {
+    type DisconnectKernelClientData,
+    type DisconnectKernelClientMutate,
+    type DisconnectKernelClientMutateAsync,
+    type DisconnectKernelClientVariables,
+    disconnectKernelClientMutationOptions
+} from "../query/disconnectKernelClient"
+import type {
+    UseMutationParameters,
+    UseMutationReturnType
+} from "../types/query"
 import { useDisconnectSocial } from "./useDisconnectSocial"
 
-export type UseDisconnectKernelClientKey = {
-    setValidator:
-        | ((validator: KernelValidator<EntryPoint> | null) => void)
-        | null
+export type UseDisconnectKernelClientParameters<context = unknown> = Evaluate<{
+    mutation?:
+        | UseMutationParameters<
+              DisconnectKernelClientData,
+              DisconnectKernelClientErrorType,
+              DisconnectKernelClientVariables,
+              context
+          >
         | undefined
-    setKernelAccount:
-        | ((kernelAccount: KernelSmartAccount<EntryPoint> | null) => void)
-        | undefined
-        | null
-    setEntryPoint: ((entryPoint: EntryPoint | null) => void) | null | undefined
-    setKernelAccountClient:
-        | ((
-              kernelAccountClient: KernelAccountClient<
-                  EntryPoint,
-                  Transport,
-                  Chain,
-                  KernelSmartAccount<EntryPoint>
-              > | null
-          ) => void)
-        | null
-        | undefined
-    logoutSocial: (() => void) | null | undefined
-}
+}>
 
-export type DisconnectKernelClientReturnType = boolean
-
-export type UseDisconnectKernelClientReturnType = {
-    disconnect: () => void
-} & Omit<
-    UseMutationResult<
-        DisconnectKernelClientReturnType,
-        unknown,
-        UseDisconnectKernelClientKey,
-        unknown
-    >,
-    "mutate"
+export type UseDisconnectKernelClientReturnType<context = unknown> = Evaluate<
+    UseMutationReturnType<
+        DisconnectKernelClientData,
+        DisconnectKernelClientErrorType,
+        DisconnectKernelClientVariables,
+        context
+    > & {
+        disconnect: DisconnectKernelClientMutate<context>
+        disconnectAsync: DisconnectKernelClientMutateAsync<context>
+    }
 >
 
-function mutationKey({ ...config }: UseDisconnectKernelClientKey) {
-    const {
-        setValidator,
-        setKernelAccount,
-        setEntryPoint,
-        setKernelAccountClient
-    } = config
-
-    return [
-        {
-            entity: "DisconnectKernelClient",
-            setValidator,
-            setKernelAccount,
-            setEntryPoint,
-            setKernelAccountClient
-        }
-    ] as const
-}
-
-async function mutationFn(
-    config: UseDisconnectKernelClientKey
-): Promise<DisconnectKernelClientReturnType> {
-    const {
-        setValidator,
-        setKernelAccount,
-        setEntryPoint,
-        setKernelAccountClient,
-        logoutSocial
-    } = config
-
-    if (
-        !setValidator ||
-        !setKernelAccount ||
-        !setEntryPoint ||
-        !setKernelAccountClient
-    ) {
-        throw new Error("setKernelAccountClient is required")
-    }
-
-    await logoutSocial?.()
-    setValidator(null)
-    setKernelAccount(null)
-    setEntryPoint(null)
-    setKernelAccountClient(null)
-
-    return true
-}
-
-export function useDisconnectKernelClient(): UseDisconnectKernelClientReturnType {
-    const {
-        setValidator,
-        setKernelAccount,
-        setEntryPoint,
-        setKernelAccountClient
-    } = useSetKernelAccount()
+export function useDisconnectKernelClient<context = unknown>(
+    parameters: UseDisconnectKernelClientParameters<context> = {}
+): UseDisconnectKernelClientReturnType<context> {
+    const { mutation } = parameters
+    const { disconnectClient } = useSetKernelAccount()
     const { logoutSocial } = useDisconnectSocial()
 
-    const { mutate, ...result } = useMutation({
-        mutationKey: mutationKey({
-            setValidator: undefined,
-            setKernelAccount: undefined,
-            setEntryPoint: undefined,
-            setKernelAccountClient: undefined,
-            logoutSocial: undefined
-        }),
-        mutationFn
-    })
-
-    const disconnect = useMemo(() => {
-        return () =>
-            mutate({
-                setValidator,
-                setKernelAccount,
-                setEntryPoint,
-                setKernelAccountClient,
-                logoutSocial
-            })
-    }, [
-        mutate,
-        setValidator,
-        setKernelAccount,
-        setEntryPoint,
-        setKernelAccountClient,
+    const mutationOptions = disconnectKernelClientMutationOptions(
+        disconnectClient,
         logoutSocial
-    ])
+    )
+
+    const { mutate, mutateAsync, ...result } = useMutation({
+        ...mutation,
+        ...mutationOptions
+    })
 
     return {
         ...result,
-        disconnect
+        disconnect: mutate,
+        disconnectAsync: mutateAsync
     }
 }

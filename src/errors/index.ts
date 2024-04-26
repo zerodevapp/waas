@@ -7,3 +7,8 @@ export {
     type PasskeyRegisterNoUsernameErrorType,
     PasskeyRegisterNoUsernameError
 } from "./passkey"
+
+export {
+    type KernelClientInvalidErrorType,
+    KernelClientInvalidError
+} from "./kernel"

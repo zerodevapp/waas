@@ -1,76 +1,60 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
-import type { KernelAccountClient } from "@zerodev/sdk"
-import type { EntryPoint } from "permissionless/types"
-import { useContext, useMemo } from "react"
+import { useMutation } from "@tanstack/react-query"
+import type { Evaluate } from "@wagmi/core/internal"
+import { useContext } from "react"
+import type { SetKernelClientErrorType } from "../actions/setKernelClient"
 import { ZeroDevValidatorContext } from "../providers/ZeroDevValidatorContext"
+import {
+    type SetKernelClientData,
+    type SetKernelClientMutate,
+    type SetKernelClientMutateAsync,
+    type SetKernelClientVariables,
+    setKernelClientMutationOptions
+} from "../query/setKernelClient"
+import type {
+    UseMutationParameters,
+    UseMutationReturnType
+} from "../types/query"
 
-export type UseSetKernelClientKey = {
-    kernelClient: KernelAccountClient<EntryPoint> | undefined
-    setKernelAccountClient: (kernelAccountClient: any | null) => void
-}
+export type UseSetKernelClientParameters<context = unknown> = Evaluate<{
+    mutation?:
+        | UseMutationParameters<
+              SetKernelClientData,
+              SetKernelClientErrorType,
+              SetKernelClientVariables,
+              context
+          >
+        | undefined
+}>
 
-export type SetKernelClientReturnType = boolean
-
-export type UseSetKernelClientReturnType = {
-    setKernelClient: (kernelClient: any) => void
-} & Omit<
-    UseMutationResult<
-        SetKernelClientReturnType,
-        unknown,
-        UseSetKernelClientKey,
-        unknown
-    >,
-    "mutate"
+export type UseSetKernelClientReturnType<context = unknown> = Evaluate<
+    UseMutationReturnType<
+        SetKernelClientData,
+        SetKernelClientErrorType,
+        SetKernelClientVariables,
+        context
+    > & {
+        setKernelClient: SetKernelClientMutate<context>
+        setKernelClientAsync: SetKernelClientMutateAsync<context>
+    }
 >
 
-function mutationKey({ ...config }: UseSetKernelClientKey) {
-    const { kernelClient, setKernelAccountClient } = config
-
-    return [
-        {
-            entity: "SetKernelClient",
-            kernelClient,
-            setKernelAccountClient
-        }
-    ] as const
-}
-
-async function mutationFn(
-    config: UseSetKernelClientKey
-): Promise<SetKernelClientReturnType> {
-    const { setKernelAccountClient, kernelClient } = config
-
-    if (!kernelClient || !setKernelAccountClient) {
-        throw new Error("kernelClient is required")
-    }
-
-    setKernelAccountClient(kernelClient)
-
-    return true
-}
-
-export function useSetKernelClient(): UseSetKernelClientReturnType {
+export function useSetKernelClient<context = unknown>(
+    parameters: UseSetKernelClientParameters<context> = {}
+): UseSetKernelClientReturnType<context> {
+    const { mutation } = parameters
     const { setKernelAccountClient } = useContext(ZeroDevValidatorContext)
 
-    const { mutate, ...result } = useMutation({
-        mutationKey: mutationKey({
-            setKernelAccountClient,
-            kernelClient: undefined
-        }),
-        mutationFn
+    const mutationOptions = setKernelClientMutationOptions(
+        setKernelAccountClient
+    )
+    const { mutate, mutateAsync, ...result } = useMutation({
+        ...mutationOptions,
+        ...mutation
     })
-
-    const setKernelClient = useMemo(() => {
-        return (kernelClient: any) => {
-            mutate({
-                setKernelAccountClient,
-                kernelClient
-            })
-        }
-    }, [mutate, setKernelAccountClient])
 
     return {
         ...result,
-        setKernelClient
+        setKernelClient: mutate,
+        setKernelClientAsync: mutateAsync
     }
 }
