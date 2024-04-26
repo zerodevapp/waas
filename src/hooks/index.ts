@@ -27,9 +27,7 @@ export {
 export {
     useCreateKernelClientPasskey,
     type UseCreateKernelClientPasskeyParameters,
-    type UseCreateKernelClientPasskeyReturnType,
-    type CreateKernelClientPasskeyVariables,
-    type CreateKernelClientPasskeyReturnType
+    type UseCreateKernelClientPasskeyReturnType
 } from "./useCreateKernelClientPasskey"
 
 export {

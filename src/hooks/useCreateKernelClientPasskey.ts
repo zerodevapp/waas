@@ -1,168 +1,122 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
-import {
-    createPasskeyValidator,
-    getPasskeyValidator
-} from "@zerodev/passkey-validator"
-import {
-    type KernelSmartAccount,
-    type KernelValidator,
-    createKernelAccount
-} from "@zerodev/sdk"
-import type { EntryPoint } from "permissionless/types"
+import { useMutation } from "@tanstack/react-query"
+import type { Evaluate } from "@wagmi/core/internal"
 import { useMemo } from "react"
-import type { PublicClient } from "viem"
+import type { CreateKernelClientPasskeyErrorType } from "../actions/createKernelClientPasskey"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
+import {
+    type CreateKernelClientPasskeyData,
+    type CreateKernelClientPasskeyLoginMutate,
+    type CreateKernelClientPasskeyLoginMutateAsync,
+    type CreateKernelClientPasskeyRegisterMutate,
+    type CreateKernelClientPasskeyRegisterMutateAsync,
+    type CreateKernelClientPasskeyVariables,
+    createKernelClientPasskeyOptions
+} from "../query/createKernelClientPasskey"
 import type { KernelVersionType } from "../types"
-import { ZERODEV_PASSKEY_URL } from "../utils/constants"
-import { getEntryPointFromVersion } from "../utils/entryPoint"
-import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn"
+import type {
+    UseMutationParameters,
+    UseMutationReturnType
+} from "../types/query"
 
-type PasskeConnectType = "register" | "login"
-
-export type UseCreateKernelClientPasskeyParameters = {
-    version: KernelVersionType
-}
-export type CreateKernelClientPasskeyVariables = {
-    username: string
-}
-
-export type UseCreateKernelClientPasskeyKey = {
-    username: string | undefined
-    publicClient: PublicClient | undefined | null
-    appId: string | undefined | null
-    type: PasskeConnectType | undefined | null
-    version: KernelVersionType
-}
-
-export type CreateKernelClientPasskeyReturnType = {
-    validator: KernelValidator<EntryPoint>
-    kernelAccount: KernelSmartAccount<EntryPoint>
-    entryPoint: EntryPoint
-}
-
-export type UseCreateKernelClientPasskeyReturnType = {
-    connectRegister: ({ username }: CreateKernelClientPasskeyVariables) => void
-    connectLogin: () => void
-} & Omit<
-    UseMutationResult<
-        CreateKernelClientPasskeyReturnType,
-        unknown,
-        UseCreateKernelClientPasskeyKey,
-        unknown
-    >,
-    "mutate"
->
-
-function mutationKey({ ...config }: UseCreateKernelClientPasskeyKey) {
-    const { username, publicClient, appId, type } = config
-
-    return [
+export type UseCreateKernelClientPasskeyParameters<context = unknown> =
+    Evaluate<
         {
-            entity: "CreateKernelClient",
-            username,
-            publicClient,
-            appId,
-            type
+            mutation?:
+                | UseMutationParameters<
+                      CreateKernelClientPasskeyData,
+                      CreateKernelClientPasskeyErrorType,
+                      CreateKernelClientPasskeyVariables,
+                      context
+                  >
+                | undefined
+        } & {
+            version: KernelVersionType
         }
-    ] as const
-}
+    >
 
-async function mutationFn(
-    config: UseCreateKernelClientPasskeyKey
-): Promise<CreateKernelClientPasskeyReturnType> {
-    const { username, publicClient, appId, type, version } = config
+export type UseCreateKernelClientPasskeyReturnType<context = unknown> =
+    Evaluate<
+        UseMutationReturnType<
+            CreateKernelClientPasskeyData,
+            CreateKernelClientPasskeyErrorType,
+            CreateKernelClientPasskeyVariables,
+            context
+        > & {
+            connectRegister: CreateKernelClientPasskeyRegisterMutate<context>
+            connectRegisterAsync: CreateKernelClientPasskeyRegisterMutateAsync<context>
+            connectLogin: CreateKernelClientPasskeyLoginMutate<context>
+            connectLoginAsync: CreateKernelClientPasskeyLoginMutateAsync<context>
+        }
+    >
 
-    if (!publicClient || !appId) {
-        throw new Error("missing publicClient or appId")
+export function useCreateKernelClientPasskey<context = unknown>(
+    parameters: UseCreateKernelClientPasskeyParameters<context> = {
+        version: "v3"
     }
-    let passkeyValidator: KernelValidator<EntryPoint>
-    const entryPoint = getEntryPointFromVersion(version)
-    const webauthnValidator = getWeb3AuthNValidatorFromVersion(version)
-
-    if (type === "register") {
-        if (!username) {
-            throw new Error("missing username")
-        }
-        passkeyValidator = await createPasskeyValidator(publicClient, {
-            passkeyName: username,
-            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId}`,
-            entryPoint: entryPoint,
-            validatorAddress: webauthnValidator
-        })
-    } else {
-        passkeyValidator = await getPasskeyValidator(publicClient, {
-            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId}`,
-            entryPoint: entryPoint,
-            validatorAddress: webauthnValidator
-        })
-    }
-
-    const kernelAccount = await createKernelAccount(publicClient, {
-        entryPoint: entryPoint,
-        plugins: {
-            sudo: passkeyValidator
-        }
-    })
-
-    return { validator: passkeyValidator, kernelAccount, entryPoint }
-}
-
-export function useCreateKernelClientPasskey({
-    version
-}: UseCreateKernelClientPasskeyParameters): UseCreateKernelClientPasskeyReturnType {
+): UseCreateKernelClientPasskeyReturnType<context> {
+    const { mutation, version } = parameters
+    const { client, appId } = useZeroDevConfig()
     const {
         setValidator,
         setKernelAccount,
         setEntryPoint,
         setKernelAccountClient
     } = useSetKernelAccount()
-    const { appId, client } = useZeroDevConfig()
 
-    const { data, mutate, ...result } = useMutation({
-        mutationKey: mutationKey({
-            appId: appId,
-            publicClient: client,
-            username: undefined,
-            type: undefined,
-            version
-        }),
-        mutationFn,
-        onSuccess: (data) => {
+    const mutationOptions = createKernelClientPasskeyOptions(
+        client,
+        appId,
+        version
+    )
+
+    const { mutate, mutateAsync, ...result } = useMutation({
+        ...mutation,
+        ...mutationOptions,
+        onSuccess: (data, variables, context) => {
             setValidator(data.validator)
             setKernelAccount(data.kernelAccount)
             setEntryPoint(data.entryPoint)
             setKernelAccountClient(null)
+            mutation?.onSuccess?.(data, variables, context)
         }
     })
 
     const connectRegister = useMemo(() => {
-        return ({ username }: CreateKernelClientPasskeyVariables) =>
+        return ({ username }: { username?: string | undefined }) =>
             mutate({
-                appId,
-                publicClient: client,
                 username,
-                version,
                 type: "register"
             })
-    }, [appId, mutate, client, version])
+    }, [mutate])
+
+    const connectRegisterAsync = useMemo(() => {
+        return ({ username }: { username?: string | undefined }) =>
+            mutateAsync({
+                username,
+                type: "register"
+            })
+    }, [mutateAsync])
 
     const connectLogin = useMemo(() => {
         return () =>
             mutate({
-                appId,
-                publicClient: client,
-                username: undefined,
-                type: "login",
-                version
+                type: "login"
             })
-    }, [appId, mutate, client, version])
+    }, [mutate])
+
+    const connectLoginAsync = useMemo(() => {
+        return () =>
+            mutateAsync({
+                type: "login"
+            })
+    }, [mutateAsync])
 
     return {
         ...result,
-        data,
-        isPending: !client || result.isPending,
-        connectRegister,
-        connectLogin
+        connectRegister: connectRegister,
+        connectRegisterAsync: connectRegisterAsync,
+        connectLogin: connectLogin,
+        connectLoginAsync: connectLoginAsync
     }
 }
