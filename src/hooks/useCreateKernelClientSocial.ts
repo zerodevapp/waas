@@ -121,12 +121,19 @@ export function useCreateKernelClientSocial({
         }
     })
 
-    const login = useCallback((socialProvider: "google" | "facebook") => {
-        if (!appId) {
-            throw new Error("missing appId")
-        }
-        initiateLogin({ socialProvider, oauthCallbackUrl, projectId: appId })
-    }, [oauthCallbackUrl, appId])
+    const login = useCallback(
+        (socialProvider: "google" | "facebook") => {
+            if (!appId) {
+                throw new Error("missing appId")
+            }
+            initiateLogin({
+                socialProvider,
+                oauthCallbackUrl,
+                projectId: appId
+            })
+        },
+        [oauthCallbackUrl, appId]
+    )
 
     useEffect(() => {
         const load = async () => {
