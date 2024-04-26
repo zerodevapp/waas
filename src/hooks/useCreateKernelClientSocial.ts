@@ -10,7 +10,7 @@ import {
     isAuthorized
 } from "@zerodev/social-validator"
 import type { EntryPoint } from "permissionless/types"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 import type { PublicClient } from "viem"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
@@ -19,12 +19,10 @@ import { getEntryPointFromVersion } from "../utils/entryPoint"
 
 export type UseCreateKernelClientSocialParameters = {
     version: KernelVersionType
-    socialProvider: "google" | "facebook"
     oauthCallbackUrl?: string
 }
 
 export type UseCreateKernelClientSocialKey = {
-    socialProvider: "google" | "facebook"
     version: KernelVersionType
     oauthCallbackUrl?: string
     publicClient?: PublicClient
@@ -39,7 +37,7 @@ export type CreateKernelClientSocialReturnType = {
 }
 
 export type UseCreateKernelClientSocialReturnType = {
-    login: () => void
+    login: (socialProvider: "google" | "facebook") => void
 } & Omit<
     UseMutationResult<
         CreateKernelClientSocialReturnType,
@@ -51,12 +49,11 @@ export type UseCreateKernelClientSocialReturnType = {
 >
 
 function mutationKey(config: UseCreateKernelClientSocialKey) {
-    const { socialProvider, oauthCallbackUrl, publicClient, appId } = config
+    const { oauthCallbackUrl, publicClient, appId } = config
 
     return [
         {
             entity: "CreateKernelClient",
-            socialProvider,
             oauthCallbackUrl,
             publicClient,
             appId
@@ -67,7 +64,7 @@ function mutationKey(config: UseCreateKernelClientSocialKey) {
 async function mutationFn(
     config: UseCreateKernelClientSocialKey
 ): Promise<CreateKernelClientSocialReturnType> {
-    const { publicClient, appId, version, type, socialProvider } = config
+    const { publicClient, appId, version, type } = config
 
     if (!publicClient || !appId) {
         throw new Error("missing publicClient or appId")
@@ -76,12 +73,9 @@ async function mutationFn(
     const entryPoint = getEntryPointFromVersion(version)
 
     if (type === "getSocialValidator") {
-        if (!socialProvider) {
-            throw new Error("missing social provider")
-        }
-
         socialValidator = await getSocialValidator(publicClient, {
-            entryPoint
+            entryPoint,
+            projectId: appId
         })
     } else {
         throw new Error("invalid type")
@@ -99,7 +93,6 @@ async function mutationFn(
 
 export function useCreateKernelClientSocial({
     version,
-    socialProvider,
     oauthCallbackUrl
 }: UseCreateKernelClientSocialParameters): UseCreateKernelClientSocialReturnType {
     const {
@@ -109,6 +102,7 @@ export function useCreateKernelClientSocial({
         setKernelAccountClient
     } = useSetKernelAccount()
     const { appId, client } = useZeroDevConfig()
+    const [isPending, setIsPending] = useState(false)
 
     const { data, mutate, ...result } = useMutation({
         mutationKey: mutationKey({
@@ -116,7 +110,6 @@ export function useCreateKernelClientSocial({
             publicClient: client ?? undefined,
             type: undefined,
             version,
-            socialProvider,
             oauthCallbackUrl
         }),
         mutationFn,
@@ -128,13 +121,18 @@ export function useCreateKernelClientSocial({
         }
     })
 
-    const login = useCallback(() => {
-        initiateLogin(socialProvider, oauthCallbackUrl)
-    }, [oauthCallbackUrl, socialProvider])
+    const login = useCallback((socialProvider: "google" | "facebook") => {
+        if (!appId) {
+            throw new Error("missing appId")
+        }
+        initiateLogin({ socialProvider, oauthCallbackUrl, projectId: appId })
+    }, [oauthCallbackUrl, appId])
 
     useEffect(() => {
         const load = async () => {
-            if (!(await isAuthorized())) {
+            setIsPending(true)
+            if (!appId || !(await isAuthorized({ projectId: appId }))) {
+                setIsPending(false)
                 return
             }
             mutate({
@@ -142,17 +140,17 @@ export function useCreateKernelClientSocial({
                 publicClient: client ?? undefined,
                 version,
                 type: "getSocialValidator",
-                socialProvider,
                 oauthCallbackUrl
             })
+            setIsPending(false)
         }
         load()
-    }, [appId, mutate, client, version, socialProvider, oauthCallbackUrl])
+    }, [appId, mutate, client, version, oauthCallbackUrl])
 
     return {
         ...result,
         data,
-        isPending: !client || result.isPending,
+        isPending,
         login
     }
 }
