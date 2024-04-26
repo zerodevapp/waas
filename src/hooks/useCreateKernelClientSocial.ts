@@ -117,6 +117,7 @@ export function useCreateKernelClientSocial({
             setValidator(data.validator)
             setKernelAccount(data.kernelAccount)
             setEntryPoint(data.entryPoint)
+            setIsPending(false)
             setKernelAccountClient(null)
         }
     })
@@ -149,7 +150,6 @@ export function useCreateKernelClientSocial({
                 type: "getSocialValidator",
                 oauthCallbackUrl
             })
-            setIsPending(false)
         }
         load()
     }, [appId, mutate, client, version, oauthCallbackUrl])
