@@ -12,6 +12,7 @@ import {
 import type { EntryPoint } from "permissionless/types"
 import { useCallback, useEffect, useState } from "react"
 import type { PublicClient } from "viem"
+import { useSocial } from "../providers/SocialContext"
 import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type { KernelVersionType } from "../types"
@@ -66,6 +67,10 @@ async function mutationFn(
 ): Promise<CreateKernelClientSocialReturnType> {
     const { publicClient, appId, version, type } = config
 
+    if (!appId || !(await isAuthorized({ projectId: appId }))) {
+        throw new Error("Not authorized")
+    }
+
     if (!publicClient || !appId) {
         throw new Error("missing publicClient or appId")
     }
@@ -102,7 +107,11 @@ export function useCreateKernelClientSocial({
         setKernelAccountClient
     } = useSetKernelAccount()
     const { appId, client } = useZeroDevConfig()
-    const [isPending, setIsPending] = useState(false)
+    const {
+        setIsSocialPending,
+        isSocialPending,
+        login: loginSocial
+    } = useSocial()
 
     const { data, mutate, ...result } = useMutation({
         mutationKey: mutationKey({
@@ -117,32 +126,25 @@ export function useCreateKernelClientSocial({
             setValidator(data.validator)
             setKernelAccount(data.kernelAccount)
             setEntryPoint(data.entryPoint)
-            setIsPending(false)
             setKernelAccountClient(null)
+        },
+        onMutate() {
+            setIsSocialPending(true)
+        },
+        onSettled() {
+            setIsSocialPending(false)
         }
     })
 
     const login = useCallback(
         (socialProvider: "google" | "facebook") => {
-            if (!appId) {
-                throw new Error("missing appId")
-            }
-            initiateLogin({
-                socialProvider,
-                oauthCallbackUrl,
-                projectId: appId
-            })
+            loginSocial(socialProvider, oauthCallbackUrl)
         },
-        [oauthCallbackUrl, appId]
+        [oauthCallbackUrl, loginSocial]
     )
 
     useEffect(() => {
         const load = async () => {
-            setIsPending(true)
-            if (!appId || !(await isAuthorized({ projectId: appId }))) {
-                setIsPending(false)
-                return
-            }
             mutate({
                 appId: appId ?? undefined,
                 publicClient: client ?? undefined,
@@ -157,7 +159,7 @@ export function useCreateKernelClientSocial({
     return {
         ...result,
         data,
-        isPending,
+        isPending: isSocialPending,
         login
     }
 }
