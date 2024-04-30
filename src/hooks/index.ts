@@ -87,3 +87,10 @@ export {
     type UseBalanceReturnType,
     type GetBalanceReturnType
 } from "./useBalance"
+
+export {
+    useCreateKernelClientSocial,
+    type UseCreateKernelClientSocialParameters,
+    type UseCreateKernelClientSocialReturnType,
+    type CreateKernelClientSocialReturnType
+} from "./useCreateKernelClientSocial"

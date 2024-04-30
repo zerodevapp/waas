@@ -1,6 +1,6 @@
 {
     "name": "@zerodev/waas",
-    "version": "0.1.5-alpha.0",
+    "version": "0.1.5",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -23,6 +23,7 @@
         "@zerodev/permissions": "^5.2.2",
         "@zerodev/sdk": "^5.2.4",
         "@zerodev/session-key": "^5.2.2",
+        "@zerodev/social-validator": "5.0.1",
         "events": "^3.3.0",
         "lodash": "^4.17.21"
     },
@@ -36,7 +37,8 @@
         "react-dom": ">=18",
         "simple-git-hooks": "^2.11.1",
         "tsup": "^8.0.2",
-        "typescript": "^5.4.3"
+        "typescript": "^5.4.3",
+        "viem": "2.9.18"
     },
     "peerDependencies": {
         "@tanstack/react-query": "^5.28.14",

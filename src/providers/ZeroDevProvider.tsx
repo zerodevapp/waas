@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import type { ReactNode } from "react"
 import type { Chain } from "wagmi/chains"
 import { SessionProvider } from "./SessionContext"
+import { SocialProvider } from "./SocialContext"
 import { WalletConnectProvider } from "./WalletConnectProvider"
 import { ZeroDevAppProvider } from "./ZeroDevAppContext"
 import { ZeroDevValidatorProvider } from "./ZeroDevValidatorContext"
@@ -25,7 +26,7 @@ export function ZeroDevProvider({
                 <ZeroDevValidatorProvider>
                     <SessionProvider>
                         <WalletConnectProvider>
-                            {children}
+                            <SocialProvider>{children}</SocialProvider>
                         </WalletConnectProvider>
                     </SessionProvider>
                 </ZeroDevValidatorProvider>

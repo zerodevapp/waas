@@ -8,6 +8,7 @@ import type { EntryPoint } from "permissionless/types"
 import { useMemo } from "react"
 import type { Chain, Transport } from "viem"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
+import { useDisconnectSocial } from "./useDisconnectSocial"
 
 export type UseDisconnectKernelClientKey = {
     setValidator:
@@ -30,6 +31,7 @@ export type UseDisconnectKernelClientKey = {
           ) => void)
         | null
         | undefined
+    logoutSocial: (() => void) | null | undefined
 }
 
 export type DisconnectKernelClientReturnType = boolean
@@ -72,7 +74,8 @@ async function mutationFn(
         setValidator,
         setKernelAccount,
         setEntryPoint,
-        setKernelAccountClient
+        setKernelAccountClient,
+        logoutSocial
     } = config
 
     if (
@@ -84,6 +87,7 @@ async function mutationFn(
         throw new Error("setKernelAccountClient is required")
     }
 
+    await logoutSocial?.()
     setValidator(null)
     setKernelAccount(null)
     setEntryPoint(null)
@@ -99,13 +103,15 @@ export function useDisconnectKernelClient(): UseDisconnectKernelClientReturnType
         setEntryPoint,
         setKernelAccountClient
     } = useSetKernelAccount()
+    const { logoutSocial } = useDisconnectSocial()
 
     const { mutate, ...result } = useMutation({
         mutationKey: mutationKey({
             setValidator: undefined,
             setKernelAccount: undefined,
             setEntryPoint: undefined,
-            setKernelAccountClient: undefined
+            setKernelAccountClient: undefined,
+            logoutSocial: undefined
         }),
         mutationFn
     })
@@ -116,14 +122,16 @@ export function useDisconnectKernelClient(): UseDisconnectKernelClientReturnType
                 setValidator,
                 setKernelAccount,
                 setEntryPoint,
-                setKernelAccountClient
+                setKernelAccountClient,
+                logoutSocial
             })
     }, [
         mutate,
         setValidator,
         setKernelAccount,
         setEntryPoint,
-        setKernelAccountClient
+        setKernelAccountClient,
+        logoutSocial
     ])
 
     return {
