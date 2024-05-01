@@ -15,3 +15,8 @@ export {
     type GasTokenChainIdType,
     type GasTokenType
 } from "./paymaster"
+
+export {
+    type PartialBy,
+    type ScopeKeyParameter
+} from "./utils"

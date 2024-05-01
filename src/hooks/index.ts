@@ -78,8 +78,7 @@ export {
 export {
     useBalance,
     type UseBalanceParameters,
-    type UseBalanceReturnType,
-    type GetBalanceReturnType
+    type UseBalanceReturnType
 } from "./useBalance"
 
 export {
