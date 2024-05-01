@@ -6,16 +6,12 @@ export {
 
 export {
     useCreateBasicSession,
-    type UseCreateBasicSessionReturnType,
-    type CreateBasicSessionVariables,
-    type CreateBasicSessionReturnType
+    type UseCreateBasicSessionReturnType
 } from "./useCreateBasicSession"
 
 export {
     useCreateSession,
-    type UseCreateSessionReturnType,
-    type CreateSessionVariables,
-    type CreateSessionReturnType
+    type UseCreateSessionReturnType
 } from "./useCreateSession"
 
 export {

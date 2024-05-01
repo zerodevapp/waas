@@ -10,5 +10,16 @@ export {
 
 export {
     type KernelClientInvalidErrorType,
-    KernelClientInvalidError
+    type KernelClientNotSupportedErrorType,
+    type KernelClientNotConnectedErrorType,
+    KernelClientInvalidError,
+    KernelClientNotSupportedError,
+    KernelClientNotConnectedError
 } from "./kernel"
+
+export {
+    type PermissionsEmptyErrorType,
+    type PoliciesEmptyErrorType,
+    PermissionsEmptyError,
+    PoliciesEmptyError
+} from "./session"
