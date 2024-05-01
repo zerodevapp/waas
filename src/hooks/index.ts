@@ -36,17 +36,13 @@ export {
 export {
     useSendUserOperation,
     type UseSendUserOperationParameters,
-    type UseSendUserOperationReturnType,
-    type SendUserOperationVariables,
-    type SendUserOperationReturnType
+    type UseSendUserOperationReturnType
 } from "./useSendUserOperation"
 
 export {
     useSendUserOperationWithSession,
     type UseSendUserOperationWithSessionParameters,
-    type UseSendUserOperationWithSessionReturnType,
-    type SendUserOperationWithSessionVariables,
-    type SendUserOperationWithSessionReturnType
+    type UseSendUserOperationWithSessionReturnType
 } from "./useSendUserOperationWithSession"
 
 export {
