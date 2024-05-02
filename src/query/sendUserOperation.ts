@@ -7,6 +7,7 @@ import {
     type SendUserOperationReturnType,
     sendUserOperation
 } from "../actions/sendUserOperation"
+import type { PaymasterERC20, PaymasterSPONSOR } from "../types"
 import type { Mutate, MutateAsync } from "../types/query"
 
 export type SendUserOperationVariables = SendUserOperationParameters
@@ -27,11 +28,17 @@ export type SendUserOperationMutateAsync<context = unknown> = MutateAsync<
     context
 >
 
+export type SendUserOpType =
+    | "sendUserOperation"
+    | "sendUserOperationWithSession"
+
 export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
-    kernelClient: KernelAccountClient<TEntryPoint> | undefined,
+    type: SendUserOpType,
+    kernelClient: KernelAccountClient<TEntryPoint> | undefined | null,
     isParallel: boolean,
     seed: string,
     nonceKey: string | undefined,
+    paymaster?: PaymasterERC20 | PaymasterSPONSOR,
     sessionId?: `0x${string}` | null | undefined
 ) {
     return {
@@ -45,8 +52,8 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
             )
         },
         mutationKey: [
-            "sendUserOperation",
-            [isParallel, seed, nonceKey, sessionId]
+            type,
+            { kernelClient, isParallel, seed, nonceKey, sessionId, paymaster }
         ]
     } as const satisfies MutationOptions<
         SendUserOperationData,

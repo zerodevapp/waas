@@ -1,4 +1,5 @@
 import { BaseError } from "@wagmi/core"
+import { Address } from "viem"
 
 export type KernelClientInvalidErrorType = KernelClientInvalidError & {
     name: "KernelClientInvalidErrorType"
@@ -32,5 +33,17 @@ export class KernelClientNotConnectedError extends BaseError {
     override name = "KernelClientNotConnectedError"
     constructor() {
         super("KernelClient not connected.")
+    }
+}
+
+export type ERC20PaymasterTokenNotSupportedErrorType =
+    ERC20PaymasterTokenNotSupportedError & {
+        name: "ERC20PaymasterTokenNotSupportedErrorType"
+    }
+
+export class ERC20PaymasterTokenNotSupportedError extends BaseError {
+    override name = "ERC20PaymasterTokenNotSupportedError"
+    constructor(token: string, chain: number) {
+        super(`ERC20 ${token} not supported on chain ${chain}.`)
     }
 }

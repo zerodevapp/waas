@@ -29,8 +29,7 @@ export {
 export {
     useKernelClient,
     type UseKernelClientParameters,
-    type UseKernelClientReturnType,
-    type GetKernelClientReturnType
+    type UseKernelClientReturnType
 } from "./useKernelClient"
 
 export {
@@ -56,8 +55,7 @@ export {
 export {
     useSessionKernelClient,
     type UseSessionKernelClientParameters,
-    type UseSessionKernelClientReturnType,
-    type GetSessionKernelClientReturnType
+    type UseSessionKernelClientReturnType
 } from "./useSessionKernelClient"
 
 export {

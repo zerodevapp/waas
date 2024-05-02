@@ -53,16 +53,23 @@ export type UseSendUserOperationWithSessionReturnType<context = unknown> =
 export function useSendUserOperationWithSession<context = unknown>(
     parameters: UseSendUserOperationWithSessionParameters<context> = {}
 ): UseSendUserOperationWithSessionReturnType<context> {
-    const { isParallel = true, nonceKey, mutation, sessionId } = parameters
-    const { kernelClient, isLoading } = useSessionKernelClient(parameters)
-
+    const {
+        isParallel = true,
+        nonceKey,
+        mutation,
+        sessionId,
+        paymaster
+    } = parameters
+    const { kernelClient, isPending } = useSessionKernelClient(parameters)
     const seed = useMemo(() => generateRandomString(), [])
 
     const mutationOptions = createSendUserOperationOptions(
+        "sendUserOperationWithSession",
         kernelClient,
         isParallel,
         seed,
         nonceKey,
+        paymaster,
         sessionId
     )
 
@@ -73,7 +80,7 @@ export function useSendUserOperationWithSession<context = unknown>(
 
     return {
         ...result,
-        isLoading: isLoading,
+        isLoading: isPending,
         write: mutate,
         writeAsync: mutateAsync
     }

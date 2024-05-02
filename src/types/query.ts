@@ -123,3 +123,38 @@ export function useQuery<queryFnData, error, data, queryKey extends QueryKey>(
     result.queryKey = parameters.queryKey
     return result
 }
+
+export function useQueryData<
+    queryFnData,
+    error,
+    data,
+    queryKey extends QueryKey
+>(
+    parameters: UseQueryParameters<queryFnData, error, data, queryKey> & {
+        queryKey: QueryKey
+    }
+): UseQueryDataReturnType<data, error> {
+    const { data, ...rest } = tanstack_useQuery({
+        ...(parameters as any),
+        queryKeyHashFn: hashFn // for bigint support
+    }) as UseQueryReturnType<data, error>
+
+    return {
+        ...rest,
+        queryKey: parameters.queryKey,
+        ...(data as data)
+    } as UseQueryDataReturnType<data, error>
+}
+
+export type UseQueryDataReturnType<
+    data = unknown,
+    error = DefaultError
+> = Evaluate<
+    Omit<
+        UseQueryResult<data, error> & {
+            queryKey: QueryKey
+        },
+        "data"
+    > &
+        data
+>

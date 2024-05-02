@@ -21,3 +21,36 @@ export class PoliciesEmptyError extends BaseError {
         super("Policies can not be empty.")
     }
 }
+
+export type SessionNotFoundErrorType = SessionNotFoundError & {
+    name: "SessionNotFoundErrorType"
+}
+
+export class SessionNotFoundError extends BaseError {
+    override name = "SessionNotFoundError"
+    constructor() {
+        super("Session not found.")
+    }
+}
+
+export type SessionNotAvailableErrorType = SessionNotAvailableError & {
+    name: "SessionNotAvailableErrorType"
+}
+
+export class SessionNotAvailableError extends BaseError {
+    override name = "SessionNotAvailableError"
+    constructor(account: `0x${string}`) {
+        super(`No available session for ${account}.`)
+    }
+}
+
+export type SessionIdMissingErrorType = SessionIdMissingError & {
+    name: "SessionIdMissingErrorType"
+}
+
+export class SessionIdMissingError extends BaseError {
+    override name = "SessionIdMissingError"
+    constructor() {
+        super("Session id is required.")
+    }
+}

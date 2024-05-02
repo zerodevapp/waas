@@ -17,7 +17,7 @@ export type SendUserOperationReturnType = Hash
 export type SendUserOperationErrorType = KernelClientNotConnectedErrorType
 
 export async function sendUserOperation<TEntryPoint extends EntryPoint>(
-    kernelClient: KernelAccountClient<TEntryPoint> | undefined,
+    kernelClient: KernelAccountClient<TEntryPoint> | undefined | null,
     isParallel: boolean,
     seed: string,
     nonceKey: string | undefined,

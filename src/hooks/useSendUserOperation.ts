@@ -50,15 +50,17 @@ export type UseSendUserOperationReturnType<context = unknown> = Evaluate<
 export function useSendUserOperation<context = unknown>(
     parameters: UseSendUserOperationParameters<context> = {}
 ): UseSendUserOperationReturnType<context> {
-    const { isParallel = true, nonceKey, mutation } = parameters
-    const { kernelClient, isLoading } = useKernelClient(parameters)
+    const { isParallel = true, nonceKey, paymaster, mutation } = parameters
+    const { kernelClient, isPending } = useKernelClient(parameters)
     const seed = useMemo(() => generateRandomString(), [])
 
     const mutationOptions = createSendUserOperationOptions(
+        "sendUserOperation",
         kernelClient,
         isParallel,
         seed,
-        nonceKey
+        nonceKey,
+        paymaster
     )
 
     const { mutate, mutateAsync, ...result } = useMutation({
@@ -68,7 +70,7 @@ export function useSendUserOperation<context = unknown>(
 
     return {
         ...result,
-        isLoading: isLoading,
+        isLoading: isPending,
         write: mutate,
         writeAsync: mutateAsync
     }
