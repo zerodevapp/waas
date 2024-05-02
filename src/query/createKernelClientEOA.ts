@@ -7,6 +7,7 @@ import {
     type CreateKernelClientEOAReturnType,
     createKernelClientEOA
 } from "../actions/createKernelClientEOA"
+import type { Config as ZdConfig } from "../createConfig"
 import type { KernelVersionType } from "../types"
 import type { Mutate, MutateAsync } from "../types/query"
 
@@ -30,17 +31,12 @@ export type CreateKernelClientEOAMutateAsync<context = unknown> = MutateAsync<
 
 export function createKernelClientEOAMutationOptions(
     config: Config,
-    publicClient: PublicClient | null,
+    zdConfig: ZdConfig,
     version: KernelVersionType
 ) {
     return {
         mutationFn(variables) {
-            return createKernelClientEOA(
-                config,
-                publicClient,
-                version,
-                variables
-            )
+            return createKernelClientEOA(config, zdConfig, version, variables)
         },
         mutationKey: ["createKernelClientEOA"]
     } as const satisfies MutationOptions<

@@ -1,6 +1,10 @@
 import type { Evaluate } from "@wagmi/core/internal"
 import type { ExactPartial } from "@wagmi/core/internal"
-import type { KernelAccountClient } from "@zerodev/sdk"
+import type {
+    KernelAccountClient,
+    KernelSmartAccount,
+    KernelValidator
+} from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
 import type { Chain } from "viem"
 import { persist, subscribeWithSelector } from "zustand/middleware"
@@ -74,7 +78,8 @@ export function createConfig<
     function getInitialState() {
         return {
             chainId: chains.getState()[0].id,
-            current: null
+            current: null,
+            connections: new Map()
         } satisfies State
     }
 
@@ -108,7 +113,8 @@ export function createConfig<
                           // Only persist "critical" store properties to preserve storage size.
                           return {
                               chainId: state.chainId,
-                              current: state.current
+                              current: state.current,
+                              connections: state.connections
                           } satisfies PartializedState
                       },
                       skipHydration: ssr,
@@ -202,8 +208,21 @@ export type State<
 > = {
     chainId: TChains[number]["id"]
     current: string | null
+    connections: Map<string, Connection>
+}
+
+export type KernelClient = {
+    client: KernelAccountClient<EntryPoint> | null
+    account: KernelSmartAccount<EntryPoint>
+    entryPoint: EntryPoint
+    validator: KernelValidator<EntryPoint>
+}
+
+export type Connection = {
+    accounts: readonly [KernelClient, ...KernelClient[]]
+    chainId: number
 }
 
 export type PartializedState = Evaluate<
-    ExactPartial<Pick<State, "chainId" | "current">>
+    ExactPartial<Pick<State, "chainId" | "current" | "connections">>
 >

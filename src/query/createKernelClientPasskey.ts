@@ -1,12 +1,12 @@
 import type { MutationOptions } from "@tanstack/query-core"
 import type { Evaluate } from "@wagmi/core/internal"
-import type { PublicClient } from "viem"
 import {
     type CreateKernelClientPasskeyErrorType,
     type CreateKernelClientPasskeyParameters,
     type CreateKernelClientPasskeyReturnType,
     createKernelClientPasskey
 } from "../actions/createKernelClientPasskey"
+import type { Config } from "../createConfig"
 import type { KernelVersionType } from "../types"
 import type { Mutate, MutateAsync } from "../types/query"
 
@@ -70,18 +70,12 @@ export type CreateKernelClientPasskeyMutateAsync<context = unknown> =
     >
 
 export function createKernelClientPasskeyOptions(
-    publicClient: PublicClient | null,
-    appId: string | null,
+    config: Config,
     version: KernelVersionType
 ) {
     return {
         mutationFn(variables) {
-            return createKernelClientPasskey(
-                publicClient,
-                appId,
-                version,
-                variables
-            )
+            return createKernelClientPasskey(config, version, variables)
         },
         mutationKey: ["createKernelClientPasskey"]
     } as const satisfies MutationOptions<

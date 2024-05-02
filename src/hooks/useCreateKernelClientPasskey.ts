@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
 import { useMemo } from "react"
 import type { CreateKernelClientPasskeyErrorType } from "../actions/createKernelClientPasskey"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type CreateKernelClientPasskeyData,
@@ -18,6 +17,7 @@ import type {
     UseMutationParameters,
     UseMutationReturnType
 } from "../types/query"
+import { useConfig } from "./useConfig"
 
 export type UseCreateKernelClientPasskeyParameters<context = unknown> =
     Evaluate<
@@ -56,7 +56,7 @@ export function useCreateKernelClientPasskey<context = unknown>(
     }
 ): UseCreateKernelClientPasskeyReturnType<context> {
     const { mutation, version } = parameters
-    const { client, appId } = useZeroDevConfig()
+    const config = useConfig()
     const {
         setValidator,
         setKernelAccount,
@@ -64,11 +64,7 @@ export function useCreateKernelClientPasskey<context = unknown>(
         setKernelAccountClient
     } = useSetKernelAccount()
 
-    const mutationOptions = createKernelClientPasskeyOptions(
-        client,
-        appId,
-        version
-    )
+    const mutationOptions = createKernelClientPasskeyOptions(config, version)
 
     const { mutate, mutateAsync, ...result } = useMutation({
         ...mutation,

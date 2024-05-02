@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
 import { useConfig } from "wagmi"
 import type { CreateKernelClientEOAErrorType } from "../actions/createKernelClientEOA"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type CreateKernelClientEOAData,
@@ -16,6 +15,7 @@ import type {
     UseMutationParameters,
     UseMutationReturnType
 } from "../types/query"
+import { useConfig as useZdConfig } from "./useConfig"
 
 export type UseCreateKernelClientEOAParameters<context = unknown> = Evaluate<
     {
@@ -49,7 +49,7 @@ export function useCreateKernelClientEOA<context = unknown>(
 ): UseCreateKernelClientEOAReturnType<context> {
     const { mutation, version } = parameters
     const config = useConfig()
-    const { client } = useZeroDevConfig()
+    const zdConfig = useZdConfig()
 
     const {
         setValidator,
@@ -60,7 +60,7 @@ export function useCreateKernelClientEOA<context = unknown>(
 
     const mutationOptions = createKernelClientEOAMutationOptions(
         config,
-        client,
+        zdConfig,
         version
     )
     const { mutate, mutateAsync, ...result } = useMutation({

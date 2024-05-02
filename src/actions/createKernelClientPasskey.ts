@@ -9,7 +9,8 @@ import {
     createKernelAccount
 } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import type { PublicClient } from "viem"
+import { http, createPublicClient } from "viem"
+import type { Config } from "../createConfig"
 import {
     PasskeyRegisterNoUsernameError,
     type PasskeyRegisterNoUsernameErrorType,
@@ -18,6 +19,7 @@ import {
 } from "../errors"
 import type { KernelVersionType } from "../types"
 import { ZERODEV_PASSKEY_URL } from "../utils/constants"
+import { ZERODEV_BUNDLER_URL } from "../utils/constants"
 import { getEntryPointFromVersion } from "../utils/entryPoint"
 import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn"
 
@@ -39,16 +41,20 @@ export type CreateKernelClientPasskeyErrorType =
     | PasskeyRegisterNoUsernameErrorType
 
 export async function createKernelClientPasskey(
-    publicClient: PublicClient | null,
-    appId: string | null,
+    config: Config,
     version: KernelVersionType,
     parameters: CreateKernelClientPasskeyParameters
 ) {
     const { type, username } = parameters
 
-    if (!publicClient || !appId) {
-        throw new ZerodevNotConfiguredError()
-    }
+    const chainId = config.state.chainId
+    const chain = config.chains.find((x) => x.id === chainId)
+    if (!chain) throw new ZerodevNotConfiguredError()
+    const projectId = config.projectIds[chainId]
+    const client = createPublicClient({
+        chain: chain,
+        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
+    })
 
     let passkeyValidator: KernelValidator<EntryPoint>
     const entryPoint = getEntryPointFromVersion(version)
@@ -58,24 +64,46 @@ export async function createKernelClientPasskey(
         if (!username) {
             throw new PasskeyRegisterNoUsernameError()
         }
-        passkeyValidator = await createPasskeyValidator(publicClient, {
+        passkeyValidator = await createPasskeyValidator(client, {
             passkeyName: username,
-            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId}`,
+            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
             entryPoint: entryPoint,
             validatorAddress: webauthnValidator
         })
     } else {
-        passkeyValidator = await getPasskeyValidator(publicClient, {
-            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${appId}`,
+        passkeyValidator = await getPasskeyValidator(client, {
+            passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
             entryPoint: entryPoint,
             validatorAddress: webauthnValidator
         })
     }
 
-    const kernelAccount = await createKernelAccount(publicClient, {
+    const kernelAccount = await createKernelAccount(client, {
         entryPoint: entryPoint,
         plugins: {
             sudo: passkeyValidator
+        }
+    })
+    const uid = `${kernelAccount.address.slice(0, 8)}/${passkeyValidator
+        .getIdentifier()
+        .slice(2, 10)}/${config.state.chainId}`
+
+    config.setState((x) => {
+        const chainId = x.chainId
+        return {
+            ...x,
+            connections: new Map(x.connections).set(uid, {
+                chainId,
+                accounts: [
+                    {
+                        client: null,
+                        account: kernelAccount,
+                        entryPoint,
+                        validator: passkeyValidator
+                    }
+                ]
+            }),
+            current: uid
         }
     })
 
