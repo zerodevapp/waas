@@ -85,3 +85,8 @@ export {
     type UseCreateKernelClientSocialReturnType,
     type CreateKernelClientSocialReturnType
 } from "./useCreateKernelClientSocial"
+
+export {
+    useConfig,
+    type UseConfigReturnType
+} from "./useConfig"
