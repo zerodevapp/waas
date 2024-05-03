@@ -84,9 +84,7 @@ export async function createKernelClientPasskey(
             sudo: passkeyValidator
         }
     })
-    const uid = `${kernelAccount.address.slice(0, 8)}/${passkeyValidator
-        .getIdentifier()
-        .slice(2, 10)}/${config.state.chainId}`
+    const uid = `passkey:${kernelAccount.address}`
 
     config.setState((x) => {
         const chainId = x.chainId

@@ -58,7 +58,6 @@ export async function createKernelClientEOA(
     const entryPoint = getEntryPointFromVersion(version)
 
     const { status } = getAccount(wagmiConfig)
-    const uid = "uid" in connector ? connector.uid : "connectFn"
 
     const isConnected =
         "uid" in connector && connector.uid === wagmiConfig.state.current
@@ -78,6 +77,7 @@ export async function createKernelClientEOA(
             sudo: ecdsaValidator
         }
     })
+    const uid = `ecdsa:${account.address}`
 
     zdConfig.setState((x) => {
         const chainId = x.chainId

@@ -90,3 +90,14 @@ export {
     useConfig,
     type UseConfigReturnType
 } from "./useConfig"
+
+export {
+    useChainId,
+    type UseChainIdReturnType
+} from "./useChainId"
+
+export {
+    useSwitchChain,
+    type UseSwitchChainParameters,
+    type UseSwitchChainReturnType
+} from "./useSwitchChain"

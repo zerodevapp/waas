@@ -108,7 +108,7 @@ export function createConfig<
                                   : initialState.chainId
                           return { ...initialState, chainId }
                       },
-                      name: "zd_store",
+                      name: "store",
                       partialize(state) {
                           // Only persist "critical" store properties to preserve storage size.
                           return {
