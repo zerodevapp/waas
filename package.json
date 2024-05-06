@@ -27,7 +27,8 @@
         "@zerodev/session-key": "^5.2.2",
         "@zerodev/social-validator": "5.0.1",
         "events": "^3.3.0",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "pino-pretty": "^11.0.0"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.7.1",
