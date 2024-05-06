@@ -58,6 +58,14 @@ export {
 } from "./useSendUserOperationWithSession"
 
 export {
+    useSendTransaction,
+    type UseSendTransactionParameters,
+    type UseSendTransactionReturnType,
+    type SendTransactionVariables,
+    type SendTransactionReturnType
+} from "./useSendTransaction"
+
+export {
     useSessionKernelClient,
     type UseSessionKernelClientParameters,
     type UseSessionKernelClientReturnType,
