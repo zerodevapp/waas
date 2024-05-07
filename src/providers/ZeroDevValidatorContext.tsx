@@ -13,7 +13,6 @@ import {
     useState
 } from "react"
 import type { Chain, Transport } from "viem"
-import { useDisconnect } from "wagmi"
 
 interface ZeroDevValidatorValue {
     validator: KernelValidator<EntryPoint> | null
@@ -48,7 +47,6 @@ interface ZeroDevValidatorProviderProps {
 export function ZeroDevValidatorProvider({
     children
 }: ZeroDevValidatorProviderProps) {
-    const { disconnect } = useDisconnect()
     const [validator, setValidator] =
         useState<KernelValidator<EntryPoint> | null>(null)
     const [kernelAccount, setKernelAccount] =
@@ -97,10 +95,6 @@ export function ZeroDevValidatorProvider({
         if (storedValidator) setValidator(JSON.parse(storedValidator))
         if (storedAccount) setKernelAccount(JSON.parse(storedAccount))
     }, [])
-
-    useEffect(() => {
-        if (!validator && disconnect) disconnect()
-    }, [validator, disconnect])
 
     return (
         <ZeroDevValidatorContext.Provider
