@@ -3,8 +3,9 @@ import type { KernelValidator } from "@zerodev/sdk"
 import type { Permission } from "@zerodev/session-key"
 import { ENTRYPOINT_ADDRESS_V06 } from "permissionless"
 import type { EntryPoint } from "permissionless/types"
-import type { Abi, PublicClient } from "viem"
+import { http, type Abi, createPublicClient } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
+import type { Config } from "../createConfig"
 import {
     KernelClientNotConnectedError,
     type KernelClientNotConnectedErrorType,
@@ -15,6 +16,7 @@ import {
     ZerodevNotConfiguredError,
     type ZerodevNotConfiguredErrorType
 } from "../errors"
+import { ZERODEV_BUNDLER_URL } from "../utils/constants"
 import { createSessionKernelAccount, createSessionKey } from "../utils/sessions"
 
 export type CreateBasicSessionParameters = Evaluate<{
@@ -38,11 +40,21 @@ export type CreateBasicSessionErrorType =
 export async function createBasicSession<TEntryPoint extends EntryPoint>(
     entryPoint: TEntryPoint | null,
     validator: KernelValidator<TEntryPoint> | null,
-    publicClient: PublicClient | null,
+    config: Config,
     parameters: CreateBasicSessionParameters
 ): Promise<CreateBasicSessionReturnType> {
     const { permissions } = parameters
-    if (!publicClient) throw new ZerodevNotConfiguredError()
+
+    const chainId = config.state.chainId
+    const selectedChain = config.chains.find((x) => x.id === chainId)
+    if (!selectedChain) {
+        throw new ZerodevNotConfiguredError()
+    }
+    const projectId = config.projectIds[selectedChain.id]
+    const publicClient = createPublicClient({
+        chain: selectedChain,
+        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
+    })
 
     if (!entryPoint || !validator) throw new KernelClientNotConnectedError()
 

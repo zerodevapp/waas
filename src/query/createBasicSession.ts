@@ -8,6 +8,7 @@ import {
     type CreateBasicSessionReturnType,
     createBasicSession
 } from "../actions/createBasicSession"
+import type { Config } from "../createConfig"
 import type { Mutate, MutateAsync } from "../types/query"
 
 export type CreateBasicSessionVariables = CreateBasicSessionParameters
@@ -33,16 +34,11 @@ export function createBasicSessionMutationOptions<
 >(
     entryPoint: TEntryPoint | null,
     validator: KernelValidator<TEntryPoint> | null,
-    publicClient: PublicClient | null
+    config: Config
 ) {
     return {
         mutationFn(variables) {
-            return createBasicSession(
-                entryPoint,
-                validator,
-                publicClient,
-                variables
-            )
+            return createBasicSession(entryPoint, validator, config, variables)
         },
         mutationKey: ["createBasicSession"]
     } as const satisfies MutationOptions<

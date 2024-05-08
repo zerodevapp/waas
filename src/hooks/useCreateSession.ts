@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
 import type { CreateSessionErrorType } from "../actions/createSession"
 import { useUpdateSession } from "../providers/SessionContext"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type CreateSessionData,
@@ -15,6 +14,7 @@ import type {
     UseMutationParameters,
     UseMutationReturnType
 } from "../types/query"
+import { useConfig } from "./useConfig"
 
 export type UseCreateSessionParameters<context = unknown> = Evaluate<{
     mutation?:
@@ -44,13 +44,13 @@ export function useCreateSession<context = unknown>(
 ): UseCreateSessionReturnType<context> {
     const { mutation } = parameters
     const { validator, entryPoint } = useKernelAccount()
-    const { client } = useZeroDevConfig()
+    const config = useConfig()
     const { updateSession } = useUpdateSession()
 
     const mutationOptions = createSessionMutationOptions(
         entryPoint,
         validator,
-        client
+        config
     )
 
     const { mutate, mutateAsync, ...result } = useMutation({

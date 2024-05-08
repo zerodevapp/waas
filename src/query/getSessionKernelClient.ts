@@ -2,17 +2,15 @@ import type { QueryOptions } from "@tanstack/query-core"
 import type { Evaluate } from "@wagmi/core/internal"
 import type { KernelValidator } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import type { Address, Chain } from "viem"
+import type { Address } from "viem"
 import {
     type GetSessionKernelClientErrorType,
     type GetSessionKernelClientParameters,
     type GetSessionKernelClientReturnType,
     getSessionKernelClient
 } from "../actions/getSessionKernelClient"
-import {
-    KernelClientNotConnectedError,
-    ZerodevNotConfiguredError
-} from "../errors"
+import type { Config } from "../createConfig"
+import { KernelClientNotConnectedError } from "../errors"
 import type { ScopeKeyParameter, SessionType } from "../types"
 import { filterQueryOptions } from "./utils"
 
@@ -21,8 +19,8 @@ export type GetSessionKernelClientOptions = Evaluate<
 >
 
 export function getSessionKernelClientQueryOption(
-    appId: string | null,
-    chain: Chain | null,
+    config: Config,
+    chainId: number | null,
     validator: KernelValidator<EntryPoint> | null,
     kernelAddress: Address | undefined,
     entryPoint: EntryPoint | null,
@@ -32,15 +30,11 @@ export function getSessionKernelClientQueryOption(
     return {
         async queryFn({ queryKey }) {
             const { scopeKey, ...parameters } = queryKey[1]
-            if (!appId || !chain) {
-                throw new ZerodevNotConfiguredError()
-            }
             if (!kernelAddress || !validator || !entryPoint) {
                 throw new KernelClientNotConnectedError()
             }
             const kernelClient = getSessionKernelClient(
-                appId,
-                chain,
+                config,
                 validator,
                 kernelAddress,
                 entryPoint,
@@ -52,8 +46,7 @@ export function getSessionKernelClientQueryOption(
             return kernelClient ?? null
         },
         queryKey: getSessionKernelClientQueryKey(
-            appId,
-            chain,
+            chainId,
             validator,
             kernelAddress,
             entryPoint,
@@ -74,8 +67,7 @@ export type GetSessionKernelClientQueryFnData =
 export type GetSessionKernelClientData = GetSessionKernelClientQueryFnData
 
 export function getSessionKernelClientQueryKey(
-    appId: string | null,
-    chain: Chain | null,
+    chainId: number | null,
     validator: KernelValidator<EntryPoint> | null,
     kernelAddress: Address | undefined,
     entryPoint: EntryPoint | null,
@@ -86,8 +78,7 @@ export function getSessionKernelClientQueryKey(
         "sessionKernelClient",
         filterQueryOptions(options),
         {
-            appId,
-            chain,
+            chainId,
             validator,
             kernelAddress,
             entryPoint,

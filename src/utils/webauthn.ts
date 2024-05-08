@@ -2,11 +2,13 @@ import {
     WEBAUTHN_VALIDATOR_ADDRESS_V06,
     WEBAUTHN_VALIDATOR_ADDRESS_V07
 } from "@zerodev/passkey-validator"
-import type { KernelVersionType } from "../types"
+import { ENTRYPOINT_ADDRESS_V06 } from "permissionless"
+import type { EntryPoint } from "permissionless/types"
 
 export const getWeb3AuthNValidatorFromVersion = (
-    version: KernelVersionType
+    entryPoint: EntryPoint
 ): `0x${string}` => {
-    if (version === "v2") return WEBAUTHN_VALIDATOR_ADDRESS_V06
+    if (entryPoint === ENTRYPOINT_ADDRESS_V06)
+        return WEBAUTHN_VALIDATOR_ADDRESS_V06
     return WEBAUTHN_VALIDATOR_ADDRESS_V07
 }

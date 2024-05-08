@@ -13,10 +13,12 @@ export {
     type KernelClientNotSupportedErrorType,
     type KernelClientNotConnectedErrorType,
     type ERC20PaymasterTokenNotSupportedErrorType,
+    type KernelAlreadyOnTheChainErrorType,
     KernelClientInvalidError,
     KernelClientNotSupportedError,
     KernelClientNotConnectedError,
-    ERC20PaymasterTokenNotSupportedError
+    ERC20PaymasterTokenNotSupportedError,
+    KernelAlreadyOnTheChainError
 } from "./kernel"
 
 export {

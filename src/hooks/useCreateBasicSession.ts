@@ -15,6 +15,7 @@ import type {
     UseMutationParameters,
     UseMutationReturnType
 } from "../types/query"
+import { useConfig } from "./useConfig"
 
 export type UseCreateBasicSessionParameters<context = unknown> = Evaluate<{
     mutation?:
@@ -44,13 +45,13 @@ export function useCreateBasicSession<context = unknown>(
 ): UseCreateBasicSessionReturnType<context> {
     const { mutation } = parameters
     const { entryPoint, validator } = useKernelAccount()
-    const { client } = useZeroDevConfig()
+    const config = useConfig()
     const { updateSession } = useUpdateSession()
 
     const mutatoinOptions = createBasicSessionMutationOptions(
         entryPoint,
         validator,
-        client
+        config
     )
 
     const { mutate, mutateAsync, ...result } = useMutation({

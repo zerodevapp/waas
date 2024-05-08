@@ -38,6 +38,7 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
     isParallel: boolean,
     seed: string,
     nonceKey: string | undefined,
+    chainId: number | null,
     paymaster?: PaymasterERC20 | PaymasterSPONSOR,
     sessionId?: `0x${string}` | null | undefined
 ) {
@@ -53,7 +54,15 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
         },
         mutationKey: [
             type,
-            { kernelClient, isParallel, seed, nonceKey, sessionId, paymaster }
+            {
+                kernelClient,
+                isParallel,
+                seed,
+                nonceKey,
+                sessionId,
+                paymaster,
+                chainId
+            }
         ]
     } as const satisfies MutationOptions<
         SendUserOperationData,

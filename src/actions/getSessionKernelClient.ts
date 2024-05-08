@@ -6,7 +6,9 @@ import {
     type SessionIdMissingErrorType,
     SessionNotAvailableError,
     SessionNotFoundError,
-    type SessionNotFoundErrorType
+    type SessionNotFoundErrorType,
+    ZerodevNotConfiguredError,
+    type ZerodevNotConfiguredErrorType
 } from "../errors"
 
 import {
@@ -20,6 +22,7 @@ import {
 import type { EntryPoint } from "permissionless/types"
 import { http, type Address, type Chain, createPublicClient } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
+import type { Config } from "../createConfig"
 import type {
     GasTokenChainIdType,
     GasTokenType,
@@ -45,10 +48,10 @@ export type GetSessionKernelClientErrorType =
     | SessionNotFoundErrorType
     | SessionIdMissingErrorType
     | ERC20PaymasterTokenNotSupportedErrorType
+    | ZerodevNotConfiguredErrorType
 
 export async function getSessionKernelClient(
-    appId: string,
-    chain: Chain,
+    config: Config,
     validator: KernelValidator<EntryPoint>,
     kernelAddress: Address,
     entryPoint: EntryPoint,
@@ -57,6 +60,12 @@ export async function getSessionKernelClient(
 ): Promise<GetSessionKernelClientReturnType> {
     const { sessionId, paymaster } = parameters
 
+    const chainId = config.state.chainId
+    const selectedChain = config.chains.find((x) => x.id === chainId)
+    if (!selectedChain) {
+        throw new ZerodevNotConfiguredError()
+    }
+    const projectId = config.projectIds[selectedChain.id]
     if (!session) {
         throw new SessionNotFoundError()
     }
@@ -73,8 +82,8 @@ export async function getSessionKernelClient(
 
     const sessionSigner = privateKeyToAccount(selectedSession.sessionKey)
     const client = createPublicClient({
-        chain: chain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${appId}`)
+        chain: selectedChain,
+        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
     })
     const { kernelAccount } = await getSessionKernelAccount({
         sessionSigner,
@@ -88,8 +97,8 @@ export async function getSessionKernelClient(
 
     const kernelClient = createKernelAccountClient({
         account: kernelAccount,
-        chain: chain,
-        bundlerTransport: http(`${ZERODEV_BUNDLER_URL}/${appId}`),
+        chain: selectedChain,
+        bundlerTransport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`),
         entryPoint: entryPoint,
         middleware: !paymaster
             ? undefined
@@ -97,7 +106,8 @@ export async function getSessionKernelClient(
                   sponsorUserOperation: async ({ userOperation }) => {
                       let gasToken: GasTokenType | undefined
                       if (paymaster.type === "ERC20") {
-                          const chainId = chain.id as GasTokenChainIdType
+                          const chainId =
+                              selectedChain.id as GasTokenChainIdType
                           if (
                               !(chainId in gasTokenAddresses) ||
                               !(
@@ -116,9 +126,9 @@ export async function getSessionKernelClient(
 
                       const kernelPaymaster = createZeroDevPaymasterClient({
                           entryPoint: entryPoint,
-                          chain: chain,
+                          chain: selectedChain,
                           transport: http(
-                              `${ZERODEV_PAYMASTER_URL}/${appId}?paymasterProvider=PIMLICO`
+                              `${ZERODEV_PAYMASTER_URL}/${projectId}?paymasterProvider=PIMLICO`
                           )
                       })
                       return kernelPaymaster.sponsorUserOperation({

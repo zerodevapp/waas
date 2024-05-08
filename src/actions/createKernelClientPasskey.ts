@@ -58,7 +58,7 @@ export async function createKernelClientPasskey(
 
     let passkeyValidator: KernelValidator<EntryPoint>
     const entryPoint = getEntryPointFromVersion(version)
-    const webauthnValidator = getWeb3AuthNValidatorFromVersion(version)
+    const webauthnValidator = getWeb3AuthNValidatorFromVersion(entryPoint)
 
     if (type === "register") {
         if (!username) {

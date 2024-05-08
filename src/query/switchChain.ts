@@ -1,5 +1,7 @@
 import type { MutateOptions, MutationOptions } from "@tanstack/query-core"
 import type { Evaluate } from "@wagmi/core/internal"
+import type { KernelValidator } from "@zerodev/sdk"
+import type { EntryPoint } from "permissionless/types"
 import type { Config as WagmiConfig } from "wagmi"
 import {
     type SwitchChainErrorType,
@@ -11,11 +13,17 @@ import type { Config as ZdConfig } from "../createConfig"
 
 export function switchChainMutationOptions<TZdConfig extends ZdConfig>(
     zdConfig: TZdConfig,
-    wagmiConfig: WagmiConfig
+    wagmiConfig: WagmiConfig,
+    kernelValidator: KernelValidator<EntryPoint> | null
 ) {
     return {
         mutationFn(variables) {
-            return switchChain(zdConfig, wagmiConfig, variables)
+            return switchChain(
+                zdConfig,
+                wagmiConfig,
+                kernelValidator,
+                variables
+            )
         },
         mutationKey: ["switchChain"]
     } as const satisfies MutationOptions<

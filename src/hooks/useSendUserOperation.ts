@@ -15,6 +15,7 @@ import type {
     UseMutationReturnType
 } from "../types/query"
 import { generateRandomString } from "../utils"
+import { useChainId } from "./useChainId"
 import { useKernelClient } from "./useKernelClient"
 
 export type UseSendUserOperationParameters<context = unknown> = Evaluate<
@@ -52,6 +53,7 @@ export function useSendUserOperation<context = unknown>(
 ): UseSendUserOperationReturnType<context> {
     const { isParallel = true, nonceKey, paymaster, mutation } = parameters
     const { kernelClient, isPending } = useKernelClient(parameters)
+    const chainId = useChainId()
     const seed = useMemo(() => generateRandomString(), [])
 
     const mutationOptions = createSendUserOperationOptions(
@@ -60,6 +62,7 @@ export function useSendUserOperation<context = unknown>(
         isParallel,
         seed,
         nonceKey,
+        chainId,
         paymaster
     )
 

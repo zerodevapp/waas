@@ -3,6 +3,8 @@ import type { Evaluate } from "@wagmi/core/internal"
 import { useConfig as useWagmiConfig } from "wagmi"
 import type { SwitchChainErrorType } from "../actions/switchChain"
 import type { Config as ZdConfig } from "../createConfig"
+import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
+import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type SwitchChainData,
     type SwitchChainMutate,
@@ -53,14 +55,25 @@ export function useSwitchChain<
     parameters: UseSwitchChainParameters<TZdConfig, context> = {}
 ): UseSwitchChainReturnType<TZdConfig, context> {
     const { mutation } = parameters
+    const { setKernelAccountClient, setKernelAccount } = useSetKernelAccount()
+    const { validator } = useKernelAccount()
 
     const zdConfig = useZdConfig()
     const wagmiConfig = useWagmiConfig()
 
-    const mutationOptions = switchChainMutationOptions(zdConfig, wagmiConfig)
+    const mutationOptions = switchChainMutationOptions(
+        zdConfig,
+        wagmiConfig,
+        validator
+    )
     const { mutate, mutateAsync, ...result } = useMutation({
         ...mutation,
-        ...mutationOptions
+        ...mutationOptions,
+        onSuccess: (data, variables, context) => {
+            setKernelAccount(data.kernelAccount)
+            setKernelAccountClient(null)
+            mutation?.onSuccess?.(data, variables, context)
+        }
     })
 
     type Return = UseSwitchChainReturnType<TZdConfig, context>

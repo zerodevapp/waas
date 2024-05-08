@@ -36,6 +36,17 @@ export class KernelClientNotConnectedError extends BaseError {
     }
 }
 
+export type KernelAlreadyOnTheChainErrorType = KernelAlreadyOnTheChainError & {
+    name: "KernelAlreadyOnTheChainErrorType"
+}
+
+export class KernelAlreadyOnTheChainError extends BaseError {
+    override name = "KernelAlreadyOnTheChainError"
+    constructor() {
+        super("KernelClient already on the chain.")
+    }
+}
+
 export type ERC20PaymasterTokenNotSupportedErrorType =
     ERC20PaymasterTokenNotSupportedError & {
         name: "ERC20PaymasterTokenNotSupportedErrorType"

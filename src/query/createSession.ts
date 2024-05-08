@@ -8,6 +8,7 @@ import {
     type CreateSessionReturnType,
     createSession
 } from "../actions/createSession"
+import type { Config } from "../createConfig"
 import type { Mutate, MutateAsync } from "../types/query"
 
 export type CreateSessionVariables = CreateSessionParameters
@@ -31,11 +32,11 @@ export type CreateSessionMutateAsync<context = unknown> = MutateAsync<
 export function createSessionMutationOptions<TEntryPoint extends EntryPoint>(
     entryPoint: TEntryPoint | null,
     validator: KernelValidator<TEntryPoint> | null,
-    publicClient: PublicClient | null
+    config: Config
 ) {
     return {
         mutationFn(variables) {
-            return createSession(entryPoint, validator, publicClient, variables)
+            return createSession(entryPoint, validator, config, variables)
         },
         mutationKey: ["createSession"]
     } as const satisfies MutationOptions<

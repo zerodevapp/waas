@@ -1,6 +1,5 @@
 import type { Evaluate } from "@wagmi/core/internal"
 import type { GetKernelClientErrorType } from "../actions/getKernelClient"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type GetKernelClientData,
@@ -14,6 +13,8 @@ import {
     type UseQueryDataReturnType,
     useQueryData
 } from "../types/query"
+import { useChainId } from "./useChainId"
+import { useConfig } from "./useConfig"
 
 export type UseKernelClientParameters<selectData = GetKernelClientData> =
     Evaluate<
@@ -33,16 +34,17 @@ export function useKernelClient<selectData = GetKernelClientData>(
     parameters: UseKernelClientParameters<selectData> = {}
 ): UseKernelClientReturnType<selectData> {
     const { query = {} } = parameters
-    const { appId, chain } = useZeroDevConfig()
+    const config = useConfig()
+    const chainId = useChainId()
     const { kernelAccount, entryPoint, kernelAccountClient } =
         useKernelAccount()
 
     const options = getKernelClientQueryOption(
-        appId,
-        chain,
+        config,
         kernelAccount,
         kernelAccountClient,
         entryPoint,
+        chainId,
         {
             ...parameters
         }

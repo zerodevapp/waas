@@ -2,7 +2,6 @@ import type { QueryOptions } from "@tanstack/query-core"
 import type { Evaluate } from "@wagmi/core/internal"
 import type { KernelAccountClient, KernelSmartAccount } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import type { Chain } from "viem"
 import {
     type GetKernelClientParameters,
     getKernelClient
@@ -11,7 +10,7 @@ import type {
     GetKernelClientErrorType,
     GetKernelClientReturnType
 } from "../actions/getKernelClient"
-import { ZerodevNotConfiguredError } from "../errors"
+import type { Config } from "../createConfig"
 import type { ScopeKeyParameter } from "../types"
 import { filterQueryOptions } from "./utils"
 
@@ -20,22 +19,18 @@ export type GetKernelClientOptions = Evaluate<
 >
 
 export function getKernelClientQueryOption(
-    appId: string | null,
-    chain: Chain | null,
+    config: Config,
     kernelAccount: KernelSmartAccount<EntryPoint> | null,
     kernelAccountClient: KernelAccountClient<EntryPoint> | null,
     entryPoint: EntryPoint | null,
+    chainId: number | null,
     options: GetKernelClientOptions
 ) {
     return {
         async queryFn({ queryKey }) {
             const { ...parameters } = queryKey[1]
-            if (!appId || !chain) {
-                throw new ZerodevNotConfiguredError()
-            }
             const kernelClient = getKernelClient(
-                appId,
-                chain,
+                config,
                 kernelAccountClient,
                 kernelAccount,
                 entryPoint,
@@ -46,11 +41,10 @@ export function getKernelClientQueryOption(
             return kernelClient ?? null
         },
         queryKey: getKernelClientQueryKey(
-            appId,
-            chain,
             kernelAccount,
             kernelAccountClient,
             entryPoint,
+            chainId,
             options
         )
     } as const satisfies QueryOptions<
@@ -66,19 +60,17 @@ export type GetKernelClientQueryFnData = Evaluate<GetKernelClientReturnType>
 export type GetKernelClientData = GetKernelClientQueryFnData
 
 export function getKernelClientQueryKey(
-    appId: string | null,
-    chain: Chain | null,
     kernelAccount: KernelSmartAccount<EntryPoint> | null,
     kernelAccountClient: KernelAccountClient<EntryPoint> | null,
     entryPoint: EntryPoint | null,
+    chainId: number | null,
     options: GetKernelClientOptions
 ) {
     return [
         "kernelClient",
         filterQueryOptions(options),
         {
-            appId,
-            chain,
+            chainId,
             kernelAccount,
             kernelAccountClient,
             entryPoint

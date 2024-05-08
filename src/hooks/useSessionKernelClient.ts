@@ -1,6 +1,5 @@
 import type { Evaluate } from "@wagmi/core/internal"
 import type { GetSessionKernelClientErrorType } from "../actions/getSessionKernelClient"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type GetSessionKernelClientData,
@@ -14,6 +13,8 @@ import {
     type UseQueryDataReturnType,
     useQueryData
 } from "../types/query"
+import { useChainId } from "./useChainId"
+import { useConfig } from "./useConfig"
 import { useSessions } from "./useSessions"
 
 export type UseSessionKernelClientParameters<
@@ -38,14 +39,15 @@ export function useSessionKernelClient<selectData = GetSessionKernelClientData>(
     parameters: UseSessionKernelClientParameters<selectData> = {}
 ): UseSessionKernelClientReturnType<selectData> {
     const { query = {} } = parameters
-    const { appId, chain } = useZeroDevConfig()
+    const config = useConfig()
+    const chainId = useChainId()
     const { validator, kernelAccount, entryPoint } = useKernelAccount()
     const session = useSessions()
     const kernelAddress = kernelAccount?.address
 
     const options = getSessionKernelClientQueryOption(
-        appId,
-        chain,
+        config,
+        chainId,
         validator,
         kernelAddress,
         entryPoint,

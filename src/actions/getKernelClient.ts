@@ -7,10 +7,12 @@ import {
 } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
 import { http, type Address, type Chain, type Transport } from "viem"
+import type { Config } from "../createConfig"
 import {
     ERC20PaymasterTokenNotSupportedError,
     type ERC20PaymasterTokenNotSupportedErrorType,
-    type KernelClientNotConnectedErrorType
+    type KernelClientNotConnectedErrorType,
+    ZerodevNotConfiguredError
 } from "../errors"
 import type {
     GasTokenChainIdType,
@@ -37,8 +39,7 @@ export type GetKernelClientErrorType =
     | ERC20PaymasterTokenNotSupportedErrorType
 
 export async function getKernelClient(
-    appId: string,
-    chain: Chain,
+    config: Config,
     kernelAccountClient: KernelAccountClient<EntryPoint> | null,
     kernelAccount: KernelSmartAccount<EntryPoint> | null,
     entryPoint: EntryPoint | null,
@@ -55,8 +56,7 @@ export async function getKernelClient(
             isConnected: true
         }
     }
-
-    if (!appId || !chain || !kernelAccount || !entryPoint) {
+    if (!kernelAccount || !entryPoint) {
         return {
             kernelClient: undefined,
             kernelAccount: undefined,
@@ -65,10 +65,17 @@ export async function getKernelClient(
             isConnected: false
         }
     }
+    const chainId = config.state.chainId
+    const selectedChain = config.chains.find((x) => x.id === chainId)
+    if (!selectedChain) {
+        throw new ZerodevNotConfiguredError()
+    }
+    const projectId = config.projectIds[selectedChain.id]
+
     const kernelClient = createKernelAccountClient({
         account: kernelAccount,
-        chain: chain,
-        bundlerTransport: http(`${ZERODEV_BUNDLER_URL}/${appId}`),
+        chain: selectedChain,
+        bundlerTransport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`),
         entryPoint: entryPoint,
         middleware: !paymaster
             ? undefined
@@ -76,7 +83,8 @@ export async function getKernelClient(
                   sponsorUserOperation: async ({ userOperation }) => {
                       let gasToken: GasTokenType | undefined
                       if (paymaster.type === "ERC20") {
-                          const chainId = chain.id as GasTokenChainIdType
+                          const chainId = config.state
+                              .chainId as GasTokenChainIdType
                           if (
                               !(chainId in gasTokenAddresses) ||
                               !(
@@ -95,9 +103,9 @@ export async function getKernelClient(
 
                       const kernelPaymaster = createZeroDevPaymasterClient({
                           entryPoint: entryPoint,
-                          chain: chain,
+                          chain: selectedChain,
                           transport: http(
-                              `${ZERODEV_PAYMASTER_URL}/${appId}?paymasterProvider=PIMLICO`
+                              `${ZERODEV_PAYMASTER_URL}/${projectId}?paymasterProvider=PIMLICO`
                           )
                       })
                       return kernelPaymaster.sponsorUserOperation({
