@@ -15,6 +15,7 @@ import type { SessionType } from "../types"
 
 type UpdateSessionArgs = {
     sessionId: `0x${string}`
+    chainId: number
     smartAccount: `0x${string}`
     enableSignature: `0x${string}`
     sessionKey: `0x${string}`
@@ -46,14 +47,17 @@ export function SessionProvider({ children }: SessionProviderProps) {
 
     function updateSession({
         sessionId,
+        chainId,
         smartAccount,
         enableSignature,
         policies,
         sessionKey,
         permissions
     }: UpdateSessionArgs) {
+        const chainSessionID =
+            `${sessionId}:${chainId.toString()}` as `0x${string}`
         createSession(
-            sessionId,
+            chainSessionID,
             smartAccount,
             enableSignature,
             policies,
@@ -62,7 +66,7 @@ export function SessionProvider({ children }: SessionProviderProps) {
         )
         setSessions((prev) => ({
             ...prev,
-            [sessionId]: {
+            [chainSessionID]: {
                 smartAccount,
                 enableSignature,
                 policies,

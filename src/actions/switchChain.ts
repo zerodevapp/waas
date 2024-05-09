@@ -37,6 +37,7 @@ export type SwitchChainReturnType<
 > = {
     id: number
     kernelAccount: KernelSmartAccount<EntryPoint> | null
+    kernelValidator: KernelValidator<EntryPoint> | null
 }
 
 export type SwitchChainErrorType =
@@ -79,6 +80,7 @@ export async function switchChain<
 
     const type = uid.split(":")[0]
     let kernelAccount: KernelSmartAccount<EntryPoint> | null = null
+    let validator: KernelValidator<EntryPoint> | null = null
 
     if (type === "ecdsa") {
         if (wagmiConfig.state.chainId !== chainId) {
@@ -91,6 +93,7 @@ export async function switchChain<
             entryPoint: entryPoint,
             signer: walletClientToSmartAccountSigner(walletClient)
         })
+        validator = ecdsaValidator
         kernelAccount = await createKernelAccount(client, {
             entryPoint: entryPoint,
             plugins: {
@@ -116,6 +119,7 @@ export async function switchChain<
                 serializedData,
                 entryPoint
             })
+            validator = passkeyValidator
         } else {
             const webauthnValidator =
                 getWeb3AuthNValidatorFromVersion(entryPoint)
@@ -124,6 +128,7 @@ export async function switchChain<
                 entryPoint: entryPoint,
                 validatorAddress: webauthnValidator
             })
+            validator = passkeyValidator
         }
         kernelAccount = await createKernelAccount(client, {
             entryPoint: entryPoint,
@@ -138,6 +143,7 @@ export async function switchChain<
     return {
         // chain as SwitchChainReturnType<TZdConfig, TChainId>
         id: chainId,
+        kernelValidator: validator,
         kernelAccount
     }
 }

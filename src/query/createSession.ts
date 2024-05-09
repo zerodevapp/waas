@@ -38,7 +38,7 @@ export function createSessionMutationOptions<TEntryPoint extends EntryPoint>(
         mutationFn(variables) {
             return createSession(entryPoint, validator, config, variables)
         },
-        mutationKey: ["createSession"]
+        mutationKey: ["createSession", validator]
     } as const satisfies MutationOptions<
         CreateSessionData,
         CreateSessionErrorType,

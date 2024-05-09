@@ -55,7 +55,8 @@ export function useSwitchChain<
     parameters: UseSwitchChainParameters<TZdConfig, context> = {}
 ): UseSwitchChainReturnType<TZdConfig, context> {
     const { mutation } = parameters
-    const { setKernelAccountClient, setKernelAccount } = useSetKernelAccount()
+    const { setKernelAccountClient, setKernelAccount, setValidator } =
+        useSetKernelAccount()
     const { validator } = useKernelAccount()
 
     const zdConfig = useZdConfig()
@@ -72,6 +73,7 @@ export function useSwitchChain<
         onSuccess: (data, variables, context) => {
             setKernelAccount(data.kernelAccount)
             setKernelAccountClient(null)
+            setValidator(data.kernelValidator)
             mutation?.onSuccess?.(data, variables, context)
         }
     })

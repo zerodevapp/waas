@@ -2,7 +2,6 @@ import { type UseMutationResult, useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
 import type { CreateBasicSessionErrorType } from "../actions/createBasicSession"
 import { useUpdateSession } from "../providers/SessionContext"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
     type CreateBasicSessionData,

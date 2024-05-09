@@ -28,6 +28,7 @@ export type CreateSessionReturnType = Evaluate<{
     sessionId: `0x${string}`
     smartAccount: `0x${string}`
     enableSignature: `0x${string}`
+    chainId: number
     policies: Policy[]
 }>
 
@@ -41,7 +42,6 @@ export async function createSession<TEntryPoint extends EntryPoint>(
     entryPoint: TEntryPoint | null,
     validator: KernelValidator<TEntryPoint> | null,
     config: Config,
-    // publicClient: PublicClient | null,
     parameters: CreateSessionParameters
 ): Promise<CreateSessionReturnType> {
     const { policies } = parameters
@@ -79,6 +79,7 @@ export async function createSession<TEntryPoint extends EntryPoint>(
     return {
         sessionKey: sessionKey,
         sessionId: kernelAccount.sessionId,
+        chainId: chainId,
         smartAccount: kernelAccount.smartAccount,
         enableSignature: kernelAccount.enableSignature,
         policies: kernelAccount.policies

@@ -24,6 +24,7 @@ export type CreateBasicSessionParameters = Evaluate<{
 }>
 
 export type CreateBasicSessionReturnType = Evaluate<{
+    chainId: number
     sessionKey: `0x${string}`
     sessionId: `0x${string}`
     smartAccount: `0x${string}`
@@ -75,6 +76,7 @@ export async function createBasicSession<TEntryPoint extends EntryPoint>(
         permissions: permissions
     })
     return {
+        chainId,
         sessionKey: sessionKey,
         sessionId: kernelAccount.sessionId,
         smartAccount: kernelAccount.smartAccount,
