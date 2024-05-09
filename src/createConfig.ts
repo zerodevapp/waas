@@ -8,7 +8,7 @@ import type {
 import type { EntryPoint } from "permissionless/types"
 import type { Chain } from "viem"
 import { persist, subscribeWithSelector } from "zustand/middleware"
-import { createStore } from "zustand/vanilla"
+import { type Mutate, type StoreApi, createStore } from "zustand/vanilla"
 import {
     KernelClientNotConnectedError,
     ZerodevNotConfiguredError
@@ -162,6 +162,24 @@ export function createConfig<
                     ? { ...options, fireImmediately: options.emitImmediately }
                     : undefined
             )
+        },
+        _internal: {
+            store,
+            ssr: Boolean(ssr),
+            chains: {
+                setState(value) {
+                    const nextChains = (
+                        typeof value === "function"
+                            ? value(chains.getState())
+                            : value
+                    ) as TChains
+                    if (nextChains.length === 0) return
+                    return chains.setState(nextChains, true)
+                },
+                subscribe(listener) {
+                    return chains.subscribe(listener)
+                }
+            }
         }
     }
 }
@@ -195,6 +213,27 @@ export type Config<
     getClient<chainId extends TChains[number]["id"]>(parameters?: {
         chainId?: chainId | TChains[number]["id"] | undefined
     }): KernelAccountClient<EntryPoint>
+
+    _internal: {
+        readonly store: Mutate<StoreApi<any>, [["zustand/persist", any]]>
+        readonly ssr: boolean
+
+        chains: {
+            setState(
+                value:
+                    | readonly [Chain, ...Chain[]]
+                    | ((
+                          state: readonly [Chain, ...Chain[]]
+                      ) => readonly [Chain, ...Chain[]])
+            ): void
+            subscribe(
+                listener: (
+                    state: readonly [Chain, ...Chain[]],
+                    prevState: readonly [Chain, ...Chain[]]
+                ) => void
+            ): () => void
+        }
+    }
 }
 
 export type PaymasterType = "SPONSOR" | "ERC20" | "NO"

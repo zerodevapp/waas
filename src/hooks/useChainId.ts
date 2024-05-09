@@ -1,3 +1,5 @@
+"use client"
+
 import { type GetChainIdReturnType, getChainId } from "../actions/getChainId"
 import { watchChainId } from "../actions/watchChainId"
 import type { Config } from "../createConfig"

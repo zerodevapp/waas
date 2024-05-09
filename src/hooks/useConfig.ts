@@ -1,3 +1,5 @@
+"use client"
+
 import { useContext } from "react"
 import type { Config } from "../createConfig"
 import { ZerodevNotConfiguredError } from "../errors"
