@@ -1,4 +1,4 @@
-import { connect, getAccount, getWalletClient } from "@wagmi/core"
+import { connect, getAccount, getWalletClient, switchChain } from "@wagmi/core"
 import type { Evaluate } from "@wagmi/core/internal"
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import {
@@ -8,7 +8,7 @@ import {
 } from "@zerodev/sdk"
 import { walletClientToSmartAccountSigner } from "permissionless"
 import type { EntryPoint } from "permissionless/types"
-import { http, type PublicClient, createPublicClient } from "viem"
+import { http, createPublicClient } from "viem"
 import type {
     ResourceUnavailableRpcErrorType,
     UserRejectedRequestErrorType
@@ -63,7 +63,11 @@ export async function createKernelClientEOA(
         "uid" in connector && connector.uid === wagmiConfig.state.current
 
     if (status === "disconnected" && !isConnected) {
-        await connect(wagmiConfig, { connector })
+        await connect(wagmiConfig, { connector, chainId: chainId })
+    } else {
+        if (wagmiConfig.state.chainId !== chainId) {
+            await switchChain(wagmiConfig, { chainId })
+        }
     }
     const walletClient = await getWalletClient(wagmiConfig)
 
