@@ -73,10 +73,7 @@ export async function switchChain<
     if (!entryPoint) {
         throw new KernelClientNotConnectedError()
     }
-    const client = createPublicClient({
-        chain: chain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
-    })
+    const client = zdConfig.getClient({ chainId })
 
     const type = uid.split(":")[0]
     let kernelAccount: KernelSmartAccount<EntryPoint> | null = null

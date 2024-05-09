@@ -51,11 +51,7 @@ export async function createBasicSession<TEntryPoint extends EntryPoint>(
     if (!selectedChain) {
         throw new ZerodevNotConfiguredError()
     }
-    const projectId = config.projectIds[selectedChain.id]
-    const publicClient = createPublicClient({
-        chain: selectedChain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
-    })
+    const publicClient = config.getClient({ chainId })
 
     if (!entryPoint || !validator) throw new KernelClientNotConnectedError()
 

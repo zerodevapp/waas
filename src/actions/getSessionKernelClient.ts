@@ -81,10 +81,7 @@ export async function getSessionKernelClient(
     const selectedSession = sessionId ? session[sessionId] : accountSession[0]
 
     const sessionSigner = privateKeyToAccount(selectedSession.sessionKey)
-    const client = createPublicClient({
-        chain: selectedChain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
-    })
+    const client = config.getClient({ chainId })
     const { kernelAccount } = await getSessionKernelAccount({
         sessionSigner,
         publicClient: client,

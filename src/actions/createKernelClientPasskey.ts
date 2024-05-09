@@ -51,10 +51,7 @@ export async function createKernelClientPasskey(
     const chain = config.chains.find((x) => x.id === chainId)
     if (!chain) throw new ZerodevNotConfiguredError()
     const projectId = config.projectIds[chainId]
-    const client = createPublicClient({
-        chain: chain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
-    })
+    const client = config.getClient({ chainId })
 
     let passkeyValidator: KernelValidator<EntryPoint>
     const entryPoint = getEntryPointFromVersion(version)

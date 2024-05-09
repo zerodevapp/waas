@@ -45,7 +45,6 @@ export async function getKernelClient(
     parameters: GetKernelClientParameters
 ): Promise<GetKernelClientReturnType> {
     const { paymaster } = parameters
-    console.log("getKrnelClient action", kernelAccount, kernelAccountClient)
 
     if (kernelAccountClient?.account) {
         return {

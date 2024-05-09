@@ -6,7 +6,8 @@ import type {
     KernelValidator
 } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import type { Chain } from "viem"
+import type { Chain, Client, PublicClient, Transport } from "viem"
+import { createPublicClient } from "viem"
 import { persist, subscribeWithSelector } from "zustand/middleware"
 import { type Mutate, type StoreApi, createStore } from "zustand/vanilla"
 import {
@@ -25,20 +26,29 @@ export type CreateConfigParameters<
     TProjectIds extends Record<TChains[number]["id"], string> = Record<
         TChains[number]["id"],
         string
+    >,
+    TTransports extends Record<TChains[number]["id"], Transport> = Record<
+        TChains[number]["id"],
+        Transport
     >
 > = Evaluate<{
     chains: TChains
     projectIds: TProjectIds
+    transports: TTransports
     storage?: Storage | null | undefined
     ssr?: boolean | undefined
 }>
 
 export function createConfig<
     const TChains extends readonly [Chain, ...Chain[]],
-    TProjectIds extends Record<TChains[number]["id"], string>
+    TProjectIds extends Record<TChains[number]["id"], string>,
+    TTransports extends Record<TChains[number]["id"], Transport> = Record<
+        TChains[number]["id"],
+        Transport
+    >
 >(
-    parameters: CreateConfigParameters<TChains, TProjectIds>
-): Config<TChains, TProjectIds> {
+    parameters: CreateConfigParameters<TChains, TProjectIds, TTransports>
+): Config<TChains, TProjectIds, TTransports> {
     const {
         storage = createStorage({
             key: "zerodev",
@@ -53,26 +63,39 @@ export function createConfig<
 
     const chains = createStore(() => rest.chains)
     const projectIds = createStore(() => rest.projectIds)
+    const transports = createStore(() => rest.transports)
 
-    const clients = new Map<number, KernelAccountClient<EntryPoint>>()
-    function getClient<chainId extends TChains[number]["id"]>(
-        config: { chainId?: chainId | TChains[number]["id"] | undefined } = {}
-    ): KernelAccountClient<EntryPoint> {
+    const clients = new Map<number, Client<Transport, TChains[number]>>()
+    function getClient<TChainId extends TChains[number]["id"]>(
+        config: { chainId?: TChainId | TChains[number]["id"] | undefined } = {}
+    ): PublicClient {
         const chainId = config.chainId ?? store.getState().chainId
         const chain = chains.getState().find((x) => x.id === chainId)
 
+        // chainId specified and not configured
         if (config.chainId && !chain) throw new ZerodevNotConfiguredError()
+
+        // If the target chain is not configured, use the client of the current chain.
+        type Return = PublicClient
         {
             const client = clients.get(store.getState().chainId)
-            if (client && !chainId) return client
+            if (client && !chain) return client as Return
             else if (!chain) throw new ZerodevNotConfiguredError()
         }
+
         // If a memoized client exists for a chain id, use that.
         {
             const client = clients.get(chainId)
-            if (client) return client
+            if (client) return client as Return
         }
-        throw new KernelClientNotConnectedError()
+
+        const client = createPublicClient({
+            chain,
+            transport: rest.transports[chainId as TChainId]
+        })
+
+        clients.set(chainId, client)
+        return client as Return
     }
 
     function getInitialState() {
@@ -132,6 +155,9 @@ export function createConfig<
         get projectIds() {
             return projectIds.getState() as TProjectIds
         },
+        get transports() {
+            return transports.getState() as TTransports
+        },
         storage,
 
         getClient,
@@ -189,10 +215,15 @@ export type Config<
     TProjectIds extends Record<TChains[number]["id"], string> = Record<
         TChains[number]["id"],
         string
+    >,
+    TTransports extends Record<TChains[number]["id"], Transport> = Record<
+        TChains[number]["id"],
+        Transport
     >
 > = {
     readonly chains: TChains
     readonly projectIds: TProjectIds
+    readonly transports: TTransports
     readonly storage: Storage | null
 
     readonly state: State<TChains>
@@ -212,7 +243,7 @@ export type Config<
 
     getClient<chainId extends TChains[number]["id"]>(parameters?: {
         chainId?: chainId | TChains[number]["id"] | undefined
-    }): KernelAccountClient<EntryPoint>
+    }): PublicClient
 
     _internal: {
         readonly store: Mutate<StoreApi<any>, [["zustand/persist", any]]>

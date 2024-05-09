@@ -49,11 +49,8 @@ export async function createKernelClientEOA(
     const chainId = zdConfig.state.chainId
     const chain = zdConfig.chains.find((x) => x.id === chainId)
     if (!chain) throw new ZerodevNotConfiguredError()
-    const projectId = zdConfig.projectIds[chainId]
-    const client = createPublicClient({
-        chain: chain,
-        transport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`)
-    })
+
+    const client = zdConfig.getClient({ chainId })
 
     const entryPoint = getEntryPointFromVersion(version)
 
