@@ -57,7 +57,7 @@ export function useSwitchChain<
     const { mutation } = parameters
     const { setKernelAccountClient, setKernelAccount, setValidator } =
         useSetKernelAccount()
-    const { validator } = useKernelAccount()
+    const { validator, kernelAccountClient } = useKernelAccount()
 
     const zdConfig = useZdConfig()
     const wagmiConfig = useWagmiConfig()
@@ -65,7 +65,8 @@ export function useSwitchChain<
     const mutationOptions = switchChainMutationOptions(
         zdConfig,
         wagmiConfig,
-        validator
+        validator,
+        kernelAccountClient
     )
     const { mutate, mutateAsync, ...result } = useMutation({
         ...mutation,

@@ -1,6 +1,6 @@
 import type { MutateOptions, MutationOptions } from "@tanstack/query-core"
 import type { Evaluate } from "@wagmi/core/internal"
-import type { KernelValidator } from "@zerodev/sdk"
+import type { KernelAccountClient, KernelValidator } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
 import type { Config as WagmiConfig } from "wagmi"
 import {
@@ -14,10 +14,16 @@ import type { Config as ZdConfig } from "../createConfig"
 export function switchChainMutationOptions<TZdConfig extends ZdConfig>(
     zdConfig: TZdConfig,
     wagmiConfig: WagmiConfig,
-    kernelValidator: KernelValidator<EntryPoint> | null
+    kernelValidator: KernelValidator<EntryPoint> | null,
+    kernelAccountClient: KernelAccountClient<EntryPoint> | null
 ) {
     return {
         mutationFn(variables) {
+            if (kernelAccountClient) {
+                throw new Error(
+                    "SwitchChain not supported with self-defined kernel account client"
+                )
+            }
             return switchChain(
                 zdConfig,
                 wagmiConfig,

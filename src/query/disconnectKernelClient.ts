@@ -1,3 +1,4 @@
+import type { Evaluate } from "@wagmi/core/internal"
 import {
     type DisconnectKernelClientErrorType,
     type DisconnectKernelClientParameters,
@@ -6,21 +7,23 @@ import {
 } from "../actions/disconnectKernelClient"
 import type { Mutate, MutateAsync } from "../types/query"
 
-export type DisconnectKernelClientVariables = DisconnectKernelClientParameters
+export type DisconnectKernelClientVariables = Evaluate<
+    DisconnectKernelClientParameters | undefined
+>
 
 export type DisconnectKernelClientData = DisconnectKernelClientReturnType
 
 export type DisconnectKernelClientMutate<context = unknown> = Mutate<
     DisconnectKernelClientData,
     DisconnectKernelClientErrorType,
-    DisconnectKernelClientVariables,
+    DisconnectKernelClientVariables | undefined,
     context
 >
 
 export type DisconnectKernelClientMutateAsync<context = unknown> = MutateAsync<
     DisconnectKernelClientData,
     DisconnectKernelClientErrorType,
-    DisconnectKernelClientVariables,
+    DisconnectKernelClientVariables | undefined,
     context
 >
 
@@ -29,7 +32,7 @@ export function disconnectKernelClientMutationOptions(
     logoutSocial: () => Promise<void>
 ) {
     return {
-        mutationFn() {
+        mutationFn(variables = {}) {
             return disconnectKernelClient(disconnectClient, logoutSocial)
         },
         mutationKey: ["disconnectKernelClient"]

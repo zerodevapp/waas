@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
+import { useMemo } from "react"
 import type { DisconnectKernelClientErrorType } from "../actions/disconnectKernelClient"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import {
@@ -55,9 +56,17 @@ export function useDisconnectKernelClient<context = unknown>(
         ...mutationOptions
     })
 
+    const disconnect = useMemo(() => {
+        return (variables = {}) => mutate(variables)
+    }, [mutate])
+
+    const disconnectAsync = useMemo(() => {
+        return (variables = {}) => mutateAsync(variables)
+    }, [mutateAsync])
+
     return {
         ...result,
-        disconnect: mutate,
-        disconnectAsync: mutateAsync
+        disconnect: disconnect,
+        disconnectAsync: disconnectAsync
     }
 }

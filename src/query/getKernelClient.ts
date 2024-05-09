@@ -33,7 +33,6 @@ export function getKernelClientQueryOption(
                 config,
                 kernelAccountClient,
                 kernelAccount,
-                entryPoint,
                 {
                     ...(parameters as GetKernelClientParameters)
                 }
@@ -43,7 +42,6 @@ export function getKernelClientQueryOption(
         queryKey: getKernelClientQueryKey(
             kernelAccount,
             kernelAccountClient,
-            entryPoint,
             chainId,
             options
         )
@@ -62,7 +60,6 @@ export type GetKernelClientData = GetKernelClientQueryFnData
 export function getKernelClientQueryKey(
     kernelAccount: KernelSmartAccount<EntryPoint> | null,
     kernelAccountClient: KernelAccountClient<EntryPoint> | null,
-    entryPoint: EntryPoint | null,
     chainId: number | null,
     options: GetKernelClientOptions
 ) {
