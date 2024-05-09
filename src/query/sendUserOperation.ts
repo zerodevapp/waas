@@ -36,7 +36,6 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
     type: SendUserOpType,
     kernelClient: KernelAccountClient<TEntryPoint> | undefined | null,
     isParallel: boolean,
-    seed: string,
     nonceKey: string | undefined,
     chainId: number | null,
     paymaster?: PaymasterERC20 | PaymasterSPONSOR,
@@ -47,7 +46,6 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
             return sendUserOperation(
                 kernelClient,
                 isParallel,
-                seed,
                 nonceKey,
                 variables
             )
@@ -57,7 +55,6 @@ export function createSendUserOperationOptions<TEntryPoint extends EntryPoint>(
             {
                 kernelClient,
                 isParallel,
-                seed,
                 nonceKey,
                 sessionId,
                 paymaster,

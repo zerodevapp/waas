@@ -9,6 +9,7 @@ import {
     KernelClientNotConnectedError,
     type KernelClientNotConnectedErrorType
 } from "../errors"
+import { generateRandomString } from "../utils"
 
 export type SendUserOperationParameters = WriteContractParameters[]
 
@@ -19,7 +20,6 @@ export type SendUserOperationErrorType = KernelClientNotConnectedErrorType
 export async function sendUserOperation<TEntryPoint extends EntryPoint>(
     kernelClient: KernelAccountClient<TEntryPoint> | undefined | null,
     isParallel: boolean,
-    seed: string,
     nonceKey: string | undefined,
     parameters: SendUserOperationParameters
 ): Promise<SendUserOperationReturnType> {
@@ -27,9 +27,10 @@ export async function sendUserOperation<TEntryPoint extends EntryPoint>(
         throw new KernelClientNotConnectedError()
     }
     const kernelAccount = kernelClient.account
-    const seedForNonce = nonceKey ? nonceKey : seed
+
     let nonce: bigint | undefined
     if (nonceKey || isParallel) {
+        const seedForNonce = nonceKey ? nonceKey : generateRandomString()
         const customNonceKey = getCustomNonceKeyFromString(
             seedForNonce,
             kernelAccount.entryPoint

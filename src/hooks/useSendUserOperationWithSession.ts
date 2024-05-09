@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
 import type { Evaluate } from "@wagmi/core/internal"
-import { useMemo } from "react"
 import type { SendUserOperationErrorType } from "../actions/sendUserOperation"
 import {
     type SendUserOperationData,
@@ -14,7 +13,6 @@ import type {
     UseMutationParameters,
     UseMutationReturnType
 } from "../types/query"
-import { generateRandomString } from "../utils"
 import { useChainId } from "./useChainId"
 import { useSessionKernelClient } from "./useSessionKernelClient"
 
@@ -63,13 +61,11 @@ export function useSendUserOperationWithSession<context = unknown>(
     } = parameters
     const { kernelClient, isPending } = useSessionKernelClient(parameters)
     const chainId = useChainId()
-    const seed = useMemo(() => generateRandomString(), [])
 
     const mutationOptions = createSendUserOperationOptions(
         "sendUserOperationWithSession",
         kernelClient,
         isParallel,
-        seed,
         nonceKey,
         chainId,
         paymaster,

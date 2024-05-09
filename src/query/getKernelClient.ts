@@ -72,8 +72,7 @@ export function getKernelClientQueryKey(
         {
             chainId,
             kernelAccount,
-            kernelAccountClient,
-            entryPoint
+            kernelAccountClient
         }
     ] as const
 }

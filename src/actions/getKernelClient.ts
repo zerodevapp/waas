@@ -47,16 +47,8 @@ export async function getKernelClient(
 ): Promise<GetKernelClientReturnType> {
     const { paymaster } = parameters
 
-    if (kernelAccountClient?.account) {
-        return {
-            kernelClient: kernelAccountClient,
-            kernelAccount: kernelAccountClient.account,
-            address: kernelAccountClient.account.address,
-            entryPoint: kernelAccountClient.account.entryPoint,
-            isConnected: true
-        }
-    }
-    if (!kernelAccount || !entryPoint) {
+    const account = kernelAccountClient?.account ?? kernelAccount
+    if (!account) {
         return {
             kernelClient: undefined,
             kernelAccount: undefined,
@@ -65,6 +57,15 @@ export async function getKernelClient(
             isConnected: false
         }
     }
+    // if (!kernelAccount || !entryPoint) {
+    //     return {
+    //         kernelClient: undefined,
+    //         kernelAccount: undefined,
+    //         address: undefined,
+    //         entryPoint: undefined,
+    //         isConnected: false
+    //     }
+    // }
     const chainId = config.state.chainId
     const selectedChain = config.chains.find((x) => x.id === chainId)
     if (!selectedChain) {
@@ -73,10 +74,10 @@ export async function getKernelClient(
     const projectId = config.projectIds[selectedChain.id]
 
     const kernelClient = createKernelAccountClient({
-        account: kernelAccount,
+        account: account,
         chain: selectedChain,
         bundlerTransport: http(`${ZERODEV_BUNDLER_URL}/${projectId}`),
-        entryPoint: entryPoint,
+        entryPoint: account.entryPoint,
         middleware: !paymaster
             ? undefined
             : {
@@ -102,7 +103,7 @@ export async function getKernelClient(
                       }
 
                       const kernelPaymaster = createZeroDevPaymasterClient({
-                          entryPoint: entryPoint,
+                          entryPoint: account.entryPoint,
                           chain: selectedChain,
                           transport: http(
                               `${ZERODEV_PAYMASTER_URL}/${projectId}?paymasterProvider=PIMLICO`
@@ -110,18 +111,19 @@ export async function getKernelClient(
                       })
                       return kernelPaymaster.sponsorUserOperation({
                           userOperation,
-                          entryPoint: entryPoint,
+                          entryPoint: account.entryPoint,
                           gasToken: gasToken
                       })
                   }
               }
     })
+    console.log("get kernelClient", kernelClient)
 
     return {
         kernelClient,
         kernelAccount: kernelClient.account,
         address: kernelClient.account.address,
-        entryPoint: entryPoint,
+        entryPoint: kernelClient.account.entryPoint,
         isConnected: true
     }
 }

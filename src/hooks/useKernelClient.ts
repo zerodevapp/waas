@@ -49,6 +49,7 @@ export function useKernelClient<selectData = GetKernelClientData>(
             ...parameters
         }
     )
+    const enabled = Boolean(kernelAccount)
 
-    return useQueryData({ ...query, ...options })
+    return useQueryData({ ...query, ...options, enabled })
 }

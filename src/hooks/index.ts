@@ -101,3 +101,8 @@ export {
     type UseSwitchChainParameters,
     type UseSwitchChainReturnType
 } from "./useSwitchChain"
+
+export {
+    useChains,
+    type UseChainsReturnType
+} from "./useChains"
