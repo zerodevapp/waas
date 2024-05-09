@@ -1,6 +1,6 @@
 {
     "name": "@zerodev/waas",
-    "version": "0.1.10",
+    "version": "0.1.11-alpha.0",
     "description": "",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
