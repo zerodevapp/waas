@@ -4,19 +4,15 @@ import {
     type KernelValidator,
     createKernelAccount
 } from "@zerodev/sdk"
-import {
-    getSocialValidator,
-    initiateLogin,
-    isAuthorized
-} from "@zerodev/social-validator"
+import { getSocialValidator, isAuthorized } from "@zerodev/social-validator"
 import type { EntryPoint } from "permissionless/types"
-import { useCallback, useEffect, useState } from "react"
-import type { PublicClient } from "viem"
+import { useCallback, useEffect } from "react"
+import type { Config } from "../createConfig"
 import { useSocial } from "../providers/SocialContext"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useSetKernelAccount } from "../providers/ZeroDevValidatorContext"
 import type { KernelVersionType } from "../types"
 import { getEntryPointFromVersion } from "../utils/entryPoint"
+import { useConfig } from "./useConfig"
 
 export type UseCreateKernelClientSocialParameters = {
     version: KernelVersionType
@@ -26,8 +22,7 @@ export type UseCreateKernelClientSocialParameters = {
 export type UseCreateKernelClientSocialKey = {
     version: KernelVersionType
     oauthCallbackUrl?: string
-    publicClient?: PublicClient
-    appId?: string
+    config: Config
     type?: "getSocialValidator"
 }
 
@@ -50,14 +45,13 @@ export type UseCreateKernelClientSocialReturnType = {
 >
 
 function mutationKey(config: UseCreateKernelClientSocialKey) {
-    const { oauthCallbackUrl, publicClient, appId } = config
+    const { oauthCallbackUrl, config: zdConfig } = config
 
     return [
         {
             entity: "CreateKernelClient",
             oauthCallbackUrl,
-            publicClient,
-            appId
+            config: zdConfig
         }
     ] as const
 }
@@ -65,22 +59,21 @@ function mutationKey(config: UseCreateKernelClientSocialKey) {
 async function mutationFn(
     config: UseCreateKernelClientSocialKey
 ): Promise<CreateKernelClientSocialReturnType> {
-    const { publicClient, appId, version, type } = config
+    const { config: zdConfig, version, type } = config
+    const projectId = zdConfig.projectIds[zdConfig.state.chainId]
+    const publicClient = zdConfig.getClient({ chainId: zdConfig.state.chainId })
 
-    if (!appId || !(await isAuthorized({ projectId: appId }))) {
+    if (!(await isAuthorized({ projectId }))) {
         throw new Error("Not authorized")
     }
 
-    if (!publicClient || !appId) {
-        throw new Error("missing publicClient or appId")
-    }
     let socialValidator: KernelValidator<EntryPoint>
     const entryPoint = getEntryPointFromVersion(version)
 
     if (type === "getSocialValidator") {
         socialValidator = await getSocialValidator(publicClient, {
             entryPoint,
-            projectId: appId
+            projectId
         })
     } else {
         throw new Error("invalid type")
@@ -90,6 +83,25 @@ async function mutationFn(
         entryPoint: entryPoint,
         plugins: {
             sudo: socialValidator
+        }
+    })
+    const uid = `social:${kernelAccount.address}`
+    zdConfig.setState((x) => {
+        const chainId = x.chainId
+        return {
+            ...x,
+            connections: new Map(x.connections).set(uid, {
+                chainId,
+                accounts: [
+                    {
+                        client: null,
+                        account: kernelAccount,
+                        entryPoint,
+                        validator: socialValidator
+                    }
+                ]
+            }),
+            current: uid
         }
     })
 
@@ -106,7 +118,7 @@ export function useCreateKernelClientSocial({
         setEntryPoint,
         setKernelAccountClient
     } = useSetKernelAccount()
-    const { appId, client } = useZeroDevConfig()
+    const config = useConfig()
     const {
         setIsSocialPending,
         isSocialPending,
@@ -115,8 +127,7 @@ export function useCreateKernelClientSocial({
 
     const { data, mutate, ...result } = useMutation({
         mutationKey: mutationKey({
-            appId: appId ?? undefined,
-            publicClient: client ?? undefined,
+            config,
             type: undefined,
             version,
             oauthCallbackUrl
@@ -146,15 +157,14 @@ export function useCreateKernelClientSocial({
     useEffect(() => {
         const load = async () => {
             mutate({
-                appId: appId ?? undefined,
-                publicClient: client ?? undefined,
+                config,
                 version,
                 type: "getSocialValidator",
                 oauthCallbackUrl
             })
         }
         load()
-    }, [appId, mutate, client, version, oauthCallbackUrl])
+    }, [mutate, version, oauthCallbackUrl, config])
 
     return {
         ...result,

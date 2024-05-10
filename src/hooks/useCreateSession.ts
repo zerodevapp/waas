@@ -1,127 +1,73 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
-import type { Policy } from "@zerodev/permissions"
-import type { KernelValidator } from "@zerodev/sdk"
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
-import type { EntryPoint } from "permissionless/types"
-import { useMemo } from "react"
-import type { PublicClient } from "viem"
-import { privateKeyToAccount } from "viem/accounts"
+import { useMutation } from "@tanstack/react-query"
+import type { Evaluate } from "@wagmi/core/internal"
+import type { CreateSessionErrorType } from "../actions/createSession"
 import { useUpdateSession } from "../providers/SessionContext"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import { useKernelAccount } from "../providers/ZeroDevValidatorContext"
-import { createSessionKernelAccount } from "../utils/sessions/createSessionKernelAccount"
-import { createSessionKey } from "../utils/sessions/manageSession"
+import {
+    type CreateSessionData,
+    type CreateSessionMutate,
+    type CreateSessionMutateAsync,
+    type CreateSessionVariables,
+    createSessionMutationOptions
+} from "../query/createSession"
+import type {
+    UseMutationParameters,
+    UseMutationReturnType
+} from "../types/query"
+import { useConfig } from "./useConfig"
 
-export type CreateSessionVariables = {
-    policies: Policy[]
-}
+export type UseCreateSessionParameters<context = unknown> = Evaluate<{
+    mutation?:
+        | UseMutationParameters<
+              CreateSessionData,
+              CreateSessionErrorType,
+              CreateSessionVariables,
+              context
+          >
+        | undefined
+}>
 
-export type UseCreateSessionKey = {
-    validator: KernelValidator<EntryPoint> | null
-    policies: Policy[] | undefined
-    client: PublicClient | undefined | null
-    entryPoint: EntryPoint | null
-}
-
-export type CreateSessionReturnType = {
-    sessionKey: `0x${string}`
-    sessionId: `0x${string}`
-    smartAccount: `0x${string}`
-    enableSignature: `0x${string}`
-    policies: Policy[]
-}
-
-export type UseCreateSessionReturnType = {
-    write: ({ policies }: CreateSessionVariables) => void
-} & Omit<
-    UseMutationResult<
-        CreateSessionReturnType,
-        unknown,
-        UseCreateSessionKey,
-        unknown
-    >,
-    "mutate"
+export type UseCreateSessionReturnType<context = unknown> = Evaluate<
+    UseMutationReturnType<
+        CreateSessionData,
+        CreateSessionErrorType,
+        CreateSessionVariables,
+        context
+    > & {
+        write: CreateSessionMutate<context>
+        writeAsync: CreateSessionMutateAsync<context>
+    }
 >
 
-function mutationKey({ ...config }: UseCreateSessionKey) {
-    const { policies, client, validator, entryPoint } = config
-
-    return [
-        {
-            entity: "CreateSession",
-            client,
-            validator,
-            policies,
-            entryPoint
-        }
-    ] as const
-}
-
-async function mutationFn(
-    config: UseCreateSessionKey
-): Promise<CreateSessionReturnType> {
-    const { policies, validator, client, entryPoint } = config
-
-    if (!validator || !client || !entryPoint) {
-        throw new Error("No validator provided")
-    }
-    if (entryPoint !== ENTRYPOINT_ADDRESS_V07) {
-        throw new Error("Only kernel v3 is supported in useCreateSession")
-    }
-    if (!policies) {
-        throw new Error("No policies provided")
-    }
-
-    const sessionKey = createSessionKey()
-    const sessionSigner = privateKeyToAccount(sessionKey)
-
-    const kernelAccount = await createSessionKernelAccount({
-        sessionSigner,
-        publicClient: client,
-        sudoValidator: validator,
-        entryPoint: entryPoint,
-        policies: policies
-    })
-    return {
-        sessionKey,
-        ...kernelAccount
-    }
-}
-
-export function useCreateSession(): UseCreateSessionReturnType {
+export function useCreateSession<context = unknown>(
+    parameters: UseCreateSessionParameters<context> = {}
+): UseCreateSessionReturnType<context> {
+    const { mutation } = parameters
     const { validator, entryPoint } = useKernelAccount()
-    const { client } = useZeroDevConfig()
+    const config = useConfig()
     const { updateSession } = useUpdateSession()
 
-    const { mutate, ...result } = useMutation({
-        mutationKey: mutationKey({
-            client,
-            validator,
-            policies: undefined,
-            entryPoint
-        }),
-        mutationFn,
-        onSuccess: (data) => {
+    const mutationOptions = createSessionMutationOptions(
+        entryPoint,
+        validator,
+        config
+    )
+
+    const { mutate, mutateAsync, ...result } = useMutation({
+        ...mutation,
+        ...mutationOptions,
+        onSuccess: (data, varialbes, context) => {
             updateSession({
                 ...data,
                 permissions: []
             })
+            mutation?.onSuccess?.(data, varialbes, context)
         }
     })
 
-    const write = useMemo(() => {
-        return ({ policies }: CreateSessionVariables) =>
-            mutate({
-                policies,
-                client,
-                validator,
-                entryPoint
-            })
-    }, [mutate, validator, client, entryPoint])
-
     return {
         ...result,
-        isPending: !client || result.isPending,
-        write
+        write: mutate,
+        writeAsync: mutateAsync
     }
 }

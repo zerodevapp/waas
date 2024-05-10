@@ -1,18 +1,12 @@
-import {
-    getSocialValidator,
-    initiateLogin,
-    isAuthorized
-} from "@zerodev/social-validator"
+import { initiateLogin } from "@zerodev/social-validator"
 import {
     createContext,
     useCallback,
     useContext,
-    useEffect,
     useMemo,
     useState
 } from "react"
-import { useCreateKernelClientSocial } from "../hooks/useCreateKernelClientSocial"
-import { useZeroDevConfig } from "./ZeroDevAppContext"
+import { useConfig } from "../hooks/useConfig"
 
 interface SocialContextValue {
     isSocialPending: boolean
@@ -34,21 +28,19 @@ export const SocialContext = createContext<SocialContextValue>({
 })
 
 export function SocialProvider({ children }: SocialProviderProps) {
-    const { appId } = useZeroDevConfig()
+    const config = useConfig()
+    const projectId = config.projectIds[config.state.chainId]
     const [isSocialPending, setIsSocialPending] = useState(false)
 
     const login = useCallback(
         (socialProvider: "google" | "facebook", oauthCallbackUrl?: string) => {
-            if (!appId) {
-                throw new Error("missing appId")
-            }
             initiateLogin({
                 socialProvider,
                 oauthCallbackUrl,
-                projectId: appId
+                projectId
             })
         },
-        [appId]
+        [projectId]
     )
 
     return (

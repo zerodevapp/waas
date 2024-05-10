@@ -6,70 +6,60 @@ export {
 
 export {
     useCreateBasicSession,
-    type UseCreateBasicSessionReturnType,
-    type CreateBasicSessionVariables,
-    type CreateBasicSessionReturnType
+    type UseCreateBasicSessionReturnType
 } from "./useCreateBasicSession"
 
 export {
     useCreateSession,
-    type UseCreateSessionReturnType,
-    type CreateSessionVariables,
-    type CreateSessionReturnType
+    type UseCreateSessionReturnType
 } from "./useCreateSession"
 
 export {
     useCreateKernelClientEOA,
     type UseCreateKernelClientEOAParameters,
-    type UseCreateKernelClientEOAReturnType,
-    type CreateKernelClientEOAVariables,
-    type CreateKernelClientEOAReturnType
+    type UseCreateKernelClientEOAReturnType
 } from "./useCreateKernelClientEOA"
 
 export {
     useCreateKernelClientPasskey,
     type UseCreateKernelClientPasskeyParameters,
-    type UseCreateKernelClientPasskeyReturnType,
-    type CreateKernelClientPasskeyVariables,
-    type CreateKernelClientPasskeyReturnType
+    type UseCreateKernelClientPasskeyReturnType
 } from "./useCreateKernelClientPasskey"
 
 export {
     useKernelClient,
     type UseKernelClientParameters,
-    type UseKernelClientReturnType,
-    type GetKernelClientReturnType
+    type UseKernelClientReturnType
 } from "./useKernelClient"
 
 export {
     useSendUserOperation,
     type UseSendUserOperationParameters,
-    type UseSendUserOperationReturnType,
-    type SendUserOperationVariables,
-    type SendUserOperationReturnType
+    type UseSendUserOperationReturnType
 } from "./useSendUserOperation"
 
 export {
     useSendUserOperationWithSession,
     type UseSendUserOperationWithSessionParameters,
-    type UseSendUserOperationWithSessionReturnType,
-    type SendUserOperationWithSessionVariables,
-    type SendUserOperationWithSessionReturnType
+    type UseSendUserOperationWithSessionReturnType
 } from "./useSendUserOperationWithSession"
 
 export {
     useSendTransaction,
     type UseSendTransactionParameters,
-    type UseSendTransactionReturnType,
-    type SendTransactionVariables,
-    type SendTransactionReturnType
+    type UseSendTransactionReturnType
 } from "./useSendTransaction"
+
+export {
+    useSendTransactionWithSession,
+    type UseSendTransactionWithSessionParameters,
+    type UseSendTransactionWithSessionReturnType
+} from "./useSendTransactionWithSession"
 
 export {
     useSessionKernelClient,
     type UseSessionKernelClientParameters,
-    type UseSessionKernelClientReturnType,
-    type GetSessionKernelClientReturnType
+    type UseSessionKernelClientReturnType
 } from "./useSessionKernelClient"
 
 export {
@@ -79,26 +69,43 @@ export {
 
 export {
     useSetKernelClient,
-    type UseSetKernelClientReturnType,
-    type SetKernelClientReturnType
+    type UseSetKernelClientReturnType
 } from "./useSetKernelClient"
 
 export {
     useDisconnectKernelClient,
-    type UseDisconnectKernelClientReturnType,
-    type DisconnectKernelClientReturnType
+    type UseDisconnectKernelClientReturnType
 } from "./useDisconnectKernelClient"
 
 export {
     useBalance,
     type UseBalanceParameters,
-    type UseBalanceReturnType,
-    type GetBalanceReturnType
+    type UseBalanceReturnType
 } from "./useBalance"
 
 export {
     useCreateKernelClientSocial,
     type UseCreateKernelClientSocialParameters,
-    type UseCreateKernelClientSocialReturnType,
-    type CreateKernelClientSocialReturnType
+    type UseCreateKernelClientSocialReturnType
 } from "./useCreateKernelClientSocial"
+
+export {
+    useConfig,
+    type UseConfigReturnType
+} from "./useConfig"
+
+export {
+    useChainId,
+    type UseChainIdReturnType
+} from "./useChainId"
+
+export {
+    useSwitchChain,
+    type UseSwitchChainParameters,
+    type UseSwitchChainReturnType
+} from "./useSwitchChain"
+
+export {
+    useChains,
+    type UseChainsReturnType
+} from "./useChains"

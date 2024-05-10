@@ -23,7 +23,8 @@
         "rules": {
             "recommended": true,
             "suspicious": {
-                "noExplicitAny": "warn"
+                "noExplicitAny": "warn",
+                "noConfusingVoidType": "warn"
             },
             "style": {
                 "noUnusedTemplateLiteral": "warn",

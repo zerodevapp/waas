@@ -139,6 +139,7 @@ export type UseSetKernelAccountHook = {
             KernelSmartAccount<EntryPoint>
         > | null
     ) => void
+    disconnectClient: () => void
 }
 
 export type UseKernelAccountHook = {
@@ -157,11 +158,19 @@ export function useSetKernelAccount(): UseSetKernelAccountHook {
         setKernelAccountClient
     } = useContext(ZeroDevValidatorContext)
 
+    const disconnectClient = () => {
+        setKernelAccount(null)
+        setKernelAccountClient(null)
+        setValidator(null)
+        setEntryPoint(null)
+    }
+
     return {
         setKernelAccountClient,
         setKernelAccount,
         setEntryPoint,
-        setValidator
+        setValidator,
+        disconnectClient
     }
 }
 

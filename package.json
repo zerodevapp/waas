@@ -1,6 +1,6 @@
 {
     "name": "@zerodev/waas",
-    "version": "0.1.10",
+    "version": "0.2.0",
     "description": "",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
@@ -23,12 +23,13 @@
         "@zerodev/ecdsa-validator": "^5.2.3",
         "@zerodev/passkey-validator": "^5.2.3",
         "@zerodev/permissions": "^5.2.2",
-        "@zerodev/sdk": "^5.2.4",
+        "@zerodev/sdk": "^5.2.10",
         "@zerodev/session-key": "^5.2.2",
         "@zerodev/social-validator": "5.0.1",
         "events": "^3.3.0",
         "lodash": "^4.17.21",
-        "pino-pretty": "^11.0.0"
+        "pino-pretty": "^11.0.0",
+        "zustand": "4.4.1"
     },
     "devDependencies": {
         "@biomejs/biome": "^1.7.1",

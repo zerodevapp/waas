@@ -1,147 +1,76 @@
-import { type UseMutationResult, useMutation } from "@tanstack/react-query"
-import type { WriteContractParameters } from "@wagmi/core"
+import { useMutation } from "@tanstack/react-query"
+import type { Evaluate } from "@wagmi/core/internal"
+import type { SendUserOperationErrorType } from "../actions/sendUserOperation"
 import {
-    type KernelAccountClient,
-    type KernelSmartAccount,
-    getCustomNonceKeyFromString
-} from "@zerodev/sdk"
-import type { EntryPoint } from "permissionless/types"
-import { useMemo } from "react"
-import { type Hash, encodeFunctionData } from "viem"
+    type SendUserOperationData,
+    type SendUserOperationMutate,
+    type SendUserOperationMutateAsync,
+    type SendUserOperationVariables,
+    createSendUserOperationOptions
+} from "../query/sendUserOperation"
 import type { PaymasterERC20, PaymasterSPONSOR } from "../types"
-import { generateRandomString } from "../utils"
+import type {
+    UseMutationParameters,
+    UseMutationReturnType
+} from "../types/query"
+import { useChainId } from "./useChainId"
 import { useKernelClient } from "./useKernelClient"
 
-export type SendUserOperationVariables = WriteContractParameters[]
-
-export type UseSendUserOperationParameters = {
-    paymaster?: PaymasterERC20 | PaymasterSPONSOR
-    isParallel?: boolean
-    nonceKey?: string
-}
-
-export type UseSendUserOperationKey = {
-    variables: SendUserOperationVariables
-    kernelClient: KernelAccountClient<EntryPoint> | undefined | null
-    kernelAccount: KernelSmartAccount<EntryPoint> | undefined | null
-    isParallel: boolean
-    seed: string
-    nonceKey: string | undefined
-}
-
-export type SendUserOperationReturnType = Hash
-
-export type UseSendUserOperationReturnType = {
-    write: (variables: SendUserOperationVariables) => void
-} & Omit<
-    UseMutationResult<
-        SendUserOperationReturnType,
-        unknown,
-        UseSendUserOperationKey,
-        unknown
-    >,
-    "mutate"
+export type UseSendUserOperationParameters<context = unknown> = Evaluate<
+    {
+        mutation?:
+            | UseMutationParameters<
+                  SendUserOperationData,
+                  SendUserOperationErrorType,
+                  SendUserOperationVariables,
+                  context
+              >
+            | undefined
+    } & {
+        paymaster?: PaymasterERC20 | PaymasterSPONSOR
+        isParallel?: boolean
+        nonceKey?: string
+    }
 >
 
-function mutationKey({ ...config }: UseSendUserOperationKey) {
-    const {
-        kernelAccount,
-        kernelClient,
-        variables,
-        isParallel,
-        seed,
-        nonceKey
-    } = config
-
-    return [
-        {
-            entity: "sendUserOperation",
-            kernelAccount,
-            kernelClient,
-            variables,
-            isParallel,
-            seed,
-            nonceKey
-        }
-    ] as const
-}
-
-async function mutationFn(
-    config: UseSendUserOperationKey
-): Promise<SendUserOperationReturnType> {
-    const {
-        kernelAccount,
-        kernelClient,
-        variables,
-        isParallel,
-        seed,
-        nonceKey
-    } = config
-
-    if (!kernelClient || !kernelAccount) {
-        throw new Error("Kernel Client is required")
+export type UseSendUserOperationReturnType<context = unknown> = Evaluate<
+    UseMutationReturnType<
+        SendUserOperationData,
+        SendUserOperationErrorType,
+        SendUserOperationVariables,
+        context
+    > & {
+        isLoading: boolean
+        write: SendUserOperationMutate<context>
+        writeAsync: SendUserOperationMutateAsync<context>
     }
+>
 
-    const seedForNonce = nonceKey ? nonceKey : seed
-    let nonce: bigint | undefined
-    if (nonceKey || isParallel) {
-        const customNonceKey = getCustomNonceKeyFromString(
-            seedForNonce,
-            kernelAccount.entryPoint
-        )
-        nonce = await kernelAccount.getNonce(customNonceKey)
-    }
+export function useSendUserOperation<context = unknown>(
+    parameters: UseSendUserOperationParameters<context> = {}
+): UseSendUserOperationReturnType<context> {
+    const { isParallel = true, nonceKey, paymaster, mutation } = parameters
+    const { kernelClient, isPending } = useKernelClient(parameters)
+    const chainId = useChainId()
 
-    return kernelClient.sendUserOperation({
-        userOperation: {
-            callData: await kernelAccount.encodeCallData(
-                variables.map((p) => ({
-                    to: p.address,
-                    value: p.value ?? 0n,
-                    data: encodeFunctionData(p)
-                }))
-            ),
-            nonce
-        }
+    const mutationOptions = createSendUserOperationOptions(
+        "sendUserOperation",
+        kernelClient,
+        isParallel,
+        nonceKey,
+        chainId,
+        paymaster
+    )
+
+    const { mutate, mutateAsync, ...result } = useMutation({
+        ...mutation,
+        ...mutationOptions
     })
-}
-
-export function useSendUserOperation(
-    parameters: UseSendUserOperationParameters = {}
-): UseSendUserOperationReturnType {
-    const { isParallel = true, nonceKey } = parameters
-    const { kernelAccount, kernelClient, error } = useKernelClient(parameters)
-
-    const seed = useMemo(() => generateRandomString(), [])
-
-    const { mutate, ...result } = useMutation({
-        mutationKey: mutationKey({
-            kernelClient,
-            kernelAccount,
-            variables: {} as SendUserOperationVariables,
-            isParallel: isParallel,
-            seed,
-            nonceKey
-        }),
-        mutationFn
-    })
-
-    const write = useMemo(() => {
-        return (variables: SendUserOperationVariables) => {
-            mutate({
-                variables,
-                kernelAccount,
-                kernelClient,
-                isParallel: isParallel,
-                seed: generateRandomString(),
-                nonceKey
-            })
-        }
-    }, [mutate, kernelClient, kernelAccount, isParallel, nonceKey])
 
     return {
         ...result,
-        error: error ?? result.error,
-        write
+        isLoading: isPending,
+        write: mutate,
+        writeAsync: mutateAsync
     }
 }
