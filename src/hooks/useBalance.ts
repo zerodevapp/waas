@@ -1,6 +1,5 @@
 import type { Evaluate } from "@wagmi/core/internal"
 import type { GetBalanceErrorType } from "../actions/getBalance"
-import { useZeroDevConfig } from "../providers/ZeroDevAppContext"
 import {
     type GetBalanceData,
     type GetBalanceOptions,
@@ -13,6 +12,7 @@ import {
     type UseQueryReturnType,
     useQuery
 } from "../types/query"
+import { useConfig } from "./useConfig"
 import { useKernelClient } from "./useKernelClient"
 
 export type UseBalanceParameters<selectData = GetBalanceData> = Evaluate<
@@ -33,7 +33,8 @@ export function useBalance<selectData = GetBalanceData>(
 ): UseBalanceReturnType<selectData> {
     const { address, query = {} } = parameters
     const { address: kernelAddress } = useKernelClient()
-    const { client } = useZeroDevConfig()
+    const config = useConfig()
+    const client = config.getClient({ chainId: config.state.chainId })
 
     const accountAddress = address ?? kernelAddress
 
