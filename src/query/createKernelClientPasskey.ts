@@ -77,7 +77,7 @@ export function createKernelClientPasskeyOptions(
         mutationFn(variables) {
             return createKernelClientPasskey(config, version, variables)
         },
-        mutationKey: ["createKernelClientPasskey"]
+        mutationKey: ["createKernelClientPasskey", version]
     } as const satisfies MutationOptions<
         CreateKernelClientPasskeyData,
         CreateKernelClientPasskeyErrorType,

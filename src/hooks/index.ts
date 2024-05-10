@@ -82,8 +82,7 @@ export {
 export {
     useCreateKernelClientSocial,
     type UseCreateKernelClientSocialParameters,
-    type UseCreateKernelClientSocialReturnType,
-    type CreateKernelClientSocialReturnType
+    type UseCreateKernelClientSocialReturnType
 } from "./useCreateKernelClientSocial"
 
 export {

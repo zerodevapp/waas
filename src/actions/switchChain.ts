@@ -9,9 +9,9 @@ import {
     type KernelValidator,
     createKernelAccount
 } from "@zerodev/sdk"
+import { getSocialValidator } from "@zerodev/social-validator"
 import { walletClientToSmartAccountSigner } from "permissionless"
 import type { EntryPoint } from "permissionless/types"
-import { http, createPublicClient } from "viem"
 import type { Config as WagmiConfig } from "wagmi"
 import type { Config as ZdConfig } from "../createConfig"
 import {
@@ -19,7 +19,7 @@ import {
     KernelClientNotConnectedError,
     ZerodevNotConfiguredError
 } from "../errors"
-import { ZERODEV_BUNDLER_URL, ZERODEV_PASSKEY_URL } from "../utils/constants"
+import { ZERODEV_PASSKEY_URL } from "../utils/constants"
 import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn"
 
 export type SwitchChainParameters<
@@ -131,6 +131,17 @@ export async function switchChain<
             entryPoint: entryPoint,
             plugins: {
                 sudo: passkeyValidator
+            }
+        })
+    } else if (type === "social") {
+        validator = await getSocialValidator(client, {
+            entryPoint,
+            projectId
+        })
+        kernelAccount = await createKernelAccount(client, {
+            entryPoint: entryPoint,
+            plugins: {
+                sudo: validator
             }
         })
     }

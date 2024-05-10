@@ -9,6 +9,11 @@ export {
 } from "./passkey"
 
 export {
+    type SocialNoAuthorizedErrorType,
+    SocialNoAuthorizedError
+} from "./social"
+
+export {
     type KernelClientInvalidErrorType,
     type KernelClientNotSupportedErrorType,
     type KernelClientNotConnectedErrorType,

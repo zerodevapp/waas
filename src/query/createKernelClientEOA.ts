@@ -1,5 +1,4 @@
 import type { MutationOptions } from "@tanstack/query-core"
-import type { PublicClient } from "viem"
 import type { Config } from "wagmi"
 import {
     type CreateKernelClientEOAErrorType,
@@ -38,7 +37,7 @@ export function createKernelClientEOAMutationOptions(
         mutationFn(variables) {
             return createKernelClientEOA(config, zdConfig, version, variables)
         },
-        mutationKey: ["createKernelClientEOA"]
+        mutationKey: ["createKernelClientEOA", version]
     } as const satisfies MutationOptions<
         CreateKernelClientEOAData,
         CreateKernelClientEOAErrorType,
