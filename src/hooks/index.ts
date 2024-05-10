@@ -47,10 +47,14 @@ export {
 export {
     useSendTransaction,
     type UseSendTransactionParameters,
-    type UseSendTransactionReturnType,
-    type SendTransactionVariables,
-    type SendTransactionReturnType
+    type UseSendTransactionReturnType
 } from "./useSendTransaction"
+
+export {
+    useSendTransactionWithSession,
+    type UseSendTransactionWithSessionParameters,
+    type UseSendTransactionWithSessionReturnType
+} from "./useSendTransactionWithSession"
 
 export {
     useSessionKernelClient,
