@@ -2,11 +2,12 @@ import { defineConfig } from "tsup"
 
 export default defineConfig({
     entry: ["src/index.ts"],
-    format: ["cjs", "esm"],
+    format: ["esm"],
     splitting: false,
     sourcemap: true,
     clean: true,
     target: "es2020",
     platform: "browser",
-    dts: true
+    dts: true,
+    outDir: "dist/esm"
 })

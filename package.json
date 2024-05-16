@@ -2,9 +2,8 @@
     "name": "@zerodev/waas",
     "version": "0.2.0",
     "description": "",
-    "main": "dist/index.cjs",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts",
     "type": "module",
     "scripts": {
         "build": "tsup",
@@ -52,6 +51,20 @@
         "viem": ">=2.5.0",
         "wagmi": ">=2.5.0"
     },
+    "exports": {
+        ".": {
+            "types": "./dist/esm/index.d.ts",
+            "default": "./dist/esm/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist/**",
+        "!dist/**/*.tsbuildinfo",
+        "src/**/*.ts",
+        "!src/**/*.test.ts",
+        "!src/**/*.test-d.ts"
+    ],
     "simple-git-hooks": {
         "pre-commit": "bun run format && bun run lint:fix"
     }
