@@ -1,7 +1,8 @@
 import type { Evaluate } from "@wagmi/core/internal"
 import {
-    createPasskeyValidator,
-    getPasskeyValidator
+    WebAuthnMode,
+    toPasskeyValidator,
+    toWebAuthnKey
 } from "@zerodev/passkey-validator"
 import {
     type KernelSmartAccount,
@@ -9,7 +10,6 @@ import {
     createKernelAccount
 } from "@zerodev/sdk"
 import type { EntryPoint } from "permissionless/types"
-import { http, createPublicClient } from "viem"
 import type { Config } from "../createConfig"
 import {
     PasskeyRegisterNoUsernameError,
@@ -19,7 +19,6 @@ import {
 } from "../errors"
 import type { KernelVersionType } from "../types"
 import { ZERODEV_PASSKEY_URL } from "../utils/constants"
-import { ZERODEV_BUNDLER_URL } from "../utils/constants"
 import { getEntryPointFromVersion } from "../utils/entryPoint"
 import { getWeb3AuthNValidatorFromVersion } from "../utils/webauthn"
 
@@ -44,7 +43,7 @@ export async function createKernelClientPasskey(
     config: Config,
     version: KernelVersionType,
     parameters: CreateKernelClientPasskeyParameters
-) {
+): Promise<CreateKernelClientPasskeyReturnType> {
     const { type, username } = parameters
 
     const chainId = config.state.chainId
@@ -53,7 +52,7 @@ export async function createKernelClientPasskey(
     const projectId = config.projectIds[chainId]
     const client = config.getClient({ chainId })
 
-    let passkeyValidator: KernelValidator<EntryPoint>
+    let webAuthnKey: any
     const entryPoint = getEntryPointFromVersion(version)
     const webauthnValidator = getWeb3AuthNValidatorFromVersion(entryPoint)
 
@@ -61,19 +60,24 @@ export async function createKernelClientPasskey(
         if (!username) {
             throw new PasskeyRegisterNoUsernameError()
         }
-        passkeyValidator = await createPasskeyValidator(client, {
+        webAuthnKey = await toWebAuthnKey({
             passkeyName: username,
             passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
-            entryPoint: entryPoint,
-            validatorAddress: webauthnValidator
+            mode: WebAuthnMode.Register
         })
     } else {
-        passkeyValidator = await getPasskeyValidator(client, {
+        webAuthnKey = await toWebAuthnKey({
+            passkeyName: "",
             passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
-            entryPoint: entryPoint,
-            validatorAddress: webauthnValidator
+            mode: WebAuthnMode.Login
         })
     }
+    const passkeyValidator = await toPasskeyValidator(client, {
+        webAuthnKey,
+        passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
+        entryPoint,
+        validatorAddress: webauthnValidator
+    })
 
     const kernelAccount = await createKernelAccount(client, {
         entryPoint: entryPoint,

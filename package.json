@@ -16,14 +16,14 @@
     "author": "ZeroDev",
     "license": "MIT",
     "dependencies": {
-        "@walletconnect/core": "^2.11.3",
-        "@walletconnect/encoding": "^1.0.2",
-        "@walletconnect/web3wallet": "^1.10.3",
-        "@zerodev/ecdsa-validator": "^5.2.3",
-        "@zerodev/passkey-validator": "^5.2.3",
-        "@zerodev/permissions": "^5.2.2",
-        "@zerodev/sdk": "^5.2.10",
-        "@zerodev/session-key": "^5.2.2",
+        "@walletconnect/core": "2.11.3",
+        "@walletconnect/encoding": "1.0.2",
+        "@walletconnect/web3wallet": "1.10.3",
+        "@zerodev/ecdsa-validator": "5.2.3",
+        "@zerodev/passkey-validator": "5.2.8",
+        "@zerodev/permissions": "5.2.6",
+        "@zerodev/sdk": "5.2.10",
+        "@zerodev/session-key": "5.2.2",
         "@zerodev/social-validator": "5.0.1",
         "events": "^3.3.0",
         "lodash": "^4.17.21",
@@ -40,16 +40,17 @@
         "react-dom": ">=18",
         "simple-git-hooks": "^2.11.1",
         "tsup": "^8.0.2",
-        "typescript": "^5.4.3",
-        "viem": "2.9.18"
+        "typescript": "^5.4.3"
     },
     "peerDependencies": {
         "@tanstack/react-query": "^5.28.14",
-        "@wagmi/core": ">=2.5.0",
         "react": ">=18.2.0",
         "typescript": ">=5.4.3",
-        "viem": ">=2.5.0",
-        "wagmi": ">=2.5.0"
+        "viem": "2.9.16",
+        "wagmi": "^2.9.9"
+    },
+    "resolutions": {
+        "viem": "2.9.16"
     },
     "exports": {
         ".": {
