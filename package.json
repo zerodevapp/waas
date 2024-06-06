@@ -43,11 +43,12 @@
         "typescript": "^5.4.3"
     },
     "peerDependencies": {
+        "@wagmi/core": ">=2.5.0",
         "@tanstack/react-query": "^5.28.14",
         "react": ">=18.2.0",
         "typescript": ">=5.4.3",
         "viem": "2.9.16",
-        "wagmi": "^2.9.9"
+        "wagmi": ">=2.5.0"
     },
     "resolutions": {
         "viem": "2.9.16"
