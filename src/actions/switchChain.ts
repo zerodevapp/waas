@@ -1,8 +1,10 @@
 import { getWalletClient, switchChain as wagmi_switchChain } from "@wagmi/core"
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import {
+    WebAuthnMode,
     deserializePasskeyValidator,
-    getPasskeyValidator
+    toPasskeyValidator,
+    toWebAuthnKey
 } from "@zerodev/passkey-validator"
 import {
     type KernelSmartAccount,
@@ -120,9 +122,15 @@ export async function switchChain<
         } else {
             const webauthnValidator =
                 getWeb3AuthNValidatorFromVersion(entryPoint)
-            passkeyValidator = await getPasskeyValidator(client, {
+            const webAuthnKey = await toWebAuthnKey({
+                passkeyName: "",
                 passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
-                entryPoint: entryPoint,
+                mode: WebAuthnMode.Login
+            })
+            passkeyValidator = await toPasskeyValidator(client, {
+                webAuthnKey,
+                passkeyServerUrl: `${ZERODEV_PASSKEY_URL}/${projectId}`,
+                entryPoint,
                 validatorAddress: webauthnValidator
             })
             validator = passkeyValidator
