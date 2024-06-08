@@ -10,7 +10,7 @@
         "dev": "tsup --watch",
         "format": "biome format . --write",
         "lint": "biome check .",
-        "lint:fix": "bun run lint --apply"
+        "lint:fix": "bun run lint --write"
     },
     "keywords": [],
     "author": "ZeroDev",
